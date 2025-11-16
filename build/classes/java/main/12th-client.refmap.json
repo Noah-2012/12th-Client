@@ -1,0 +1,16 @@
+{
+  "mappings": {
+    "com/noadsch12/mixin/TitleScreenMixin": {
+      "init": "Lnet/minecraft/class_442;method_25426()V",
+      "render": "Lnet/minecraft/class_442;method_25394(Lnet/minecraft/class_332;IIF)V"
+    }
+  },
+  "data": {
+    "named:intermediary": {
+      "com/noadsch12/mixin/TitleScreenMixin": {
+        "init": "Lnet/minecraft/class_442;method_25426()V",
+        "render": "Lnet/minecraft/class_442;method_25394(Lnet/minecraft/class_332;IIF)V"
+      }
+    }
+  }
+}
