@@ -1,5 +1,6 @@
 package com.noadsch12;
 
+import com.noadsch12.cheat.CheatEngine;
 import net.fabricmc.api.ClientModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,5 +12,6 @@ public class TwelfthClient implements ClientModInitializer {
     public void onInitializeClient() {
         LOGGER.info("12th Client - Client initialized!");
         HotbarHelper.register();
+        CheatEngine.register();
     }
 }

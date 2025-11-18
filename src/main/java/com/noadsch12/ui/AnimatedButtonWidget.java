@@ -35,13 +35,13 @@ public class AnimatedButtonWidget extends ButtonWidget {
 
         String colorCode;
         if (brightness < 0.25f) {
-            colorCode = "§0§kMin§r§0"; // Dunkelgrau
+            colorCode = "§0§kMin§r§0"; // Black
         } else if (brightness < 0.5f) {
-            colorCode = "§8§kMin§r§8"; // Grau
+            colorCode = "§8§kMin§r§8"; // Dark Grey
         } else if (brightness < 0.75) {
-            colorCode = "§7§kMin§r§7"; // Weiß
+            colorCode = "§7§kMin§r§7"; // Grey
         } else {
-            colorCode = "§f§kMin§r§f";
+            colorCode = "§f§kMin§r§f"; // White
         }
 
         this.setMessage(Text.literal(colorCode + baseText + afterCode));
