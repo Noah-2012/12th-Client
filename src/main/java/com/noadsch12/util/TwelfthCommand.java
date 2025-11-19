@@ -12,7 +12,7 @@ public class TwelfthCommand {
     public static boolean fullbrightEnabled = false;
 
     public static void register() {
-        System.out.println("========== CHEATSYSTEM REGISTERED ==========");
+        System.out.println("========== COMMANDSYSTEM REGISTERED ==========");
 
         // Commands direkt registrieren!
         registerCommands();
