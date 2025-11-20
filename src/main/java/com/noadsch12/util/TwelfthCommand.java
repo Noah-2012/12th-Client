@@ -16,12 +16,11 @@ public class TwelfthCommand {
 
         // Commands direkt registrieren!
         registerCommands();
-        sendnewCommand();
 
         // Weltabhängige Logik weiterhin per Tick
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player != null && client.world != null) {
-                // z.B. deine Cheat-Features anwenden
+                sendnewCommand();
             }
         });
     }
