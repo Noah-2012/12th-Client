@@ -4,3 +4,4 @@ accessible method net/minecraft/client/gui/screen/Screen addDrawable (Lnet/minec
 accessible method net/minecraft/client/gui/screen/Screen addDrawableChild (Lnet/minecraft/client/gui/Element;)Lnet/minecraft/client/gui/Element;
 accessible field net/minecraft/client/gui/screen/Screen client Lnet/minecraft/client/MinecraftClient;
 accessible field net/minecraft/client/render/GameRenderer buffers Lnet/minecraft/client/render/BufferBuilderStorage;
+accessible field com/mojang/blaze3d/pipeline/RenderPipeline location Lnet/minecraft/util/Identifier;

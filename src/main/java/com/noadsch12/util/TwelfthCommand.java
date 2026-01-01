@@ -1,5 +1,8 @@
 package com.noadsch12.util;
 
+import com.noadsch12.render.EntityCulling;
+import com.noadsch12.render.EntityESP;
+import com.noadsch12.ui.ClientSettingsScreen;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -7,20 +10,32 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 
 public class TwelfthCommand {
-
-    public static boolean espEnabled = false;
-    public static boolean fullbrightEnabled = false;
+    private static boolean commandSent = false;
+    private static boolean cullingEnabled = false;
+    private static boolean espEnabled = false;
 
     public static void register() {
         System.out.println("========== COMMANDSYSTEM REGISTERED ==========");
 
-        // Commands direkt registrieren!
+        // Register Commands directly
         registerCommands();
 
-        // Weltabhängige Logik weiterhin per Tick
+        // World-dependent logic still implemented per tick
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player != null && client.world != null) {
+            if (!commandSent && client.player != null && client.world != null) {
                 sendnewCommand();
+                commandSent = true;  // stops further execution
+            }
+
+            // also checks if the Default option is set in the Client Settings Screen
+            if (ClientSettingsScreen.EntityCullingEnabled && !cullingEnabled && client.player != null && client.world != null) {
+                EntityCulling.setEnabled(true);
+                cullingEnabled = true;
+            }
+
+            if (!espEnabled && client.player != null && client.world != null) {
+                EntityESP.setEnabled(true);
+                espEnabled = true;
             }
         });
     }
@@ -38,6 +53,27 @@ public class TwelfthCommand {
                                 }
                                 return 1;
                             }))
+                    .then(ClientCommandManager.literal("culling")
+                            .then(ClientCommandManager.literal("on")
+                                    .executes(ctx -> {
+                                        try {
+                                            EntityCulling.setEnabled(true);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            sendMessage("§cAn Error occured " + e.getMessage());
+                                        }
+                                        return 1;
+                                    }))
+                            .then(ClientCommandManager.literal("off")
+                                    .executes(ctx -> {
+                                        try {
+                                            EntityCulling.setEnabled(false);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            sendMessage("§cAn Error occured " + e.getMessage());
+                                        }
+                                        return 1;
+                                    })))
                     .then(ClientCommandManager.literal("latest")
                             .then(ClientCommandManager.literal("check")
                                     .executes(ctx -> {
@@ -104,15 +140,5 @@ public class TwelfthCommand {
         if (client.player != null) {
             client.player.sendMessage(Text.literal(msg), false);
         }
-    }
-
-    private static int toggleEsp(boolean state) {
-        espEnabled = state;
-        return 1;
-    }
-
-    private static int toggleFullbright(boolean state) {
-        fullbrightEnabled = state;
-        return 1;
     }
 }

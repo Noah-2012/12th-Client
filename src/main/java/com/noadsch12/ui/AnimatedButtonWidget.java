@@ -31,7 +31,7 @@ public class AnimatedButtonWidget extends ButtonWidget {
         // Schwarz-Weiß Pulsieren mit Standard-Farbcodes
         float brightness = (float) (Math.sin(colorPhase) * 0.5 + 0.5);
         String afterCode;
-        afterCode = "§kMin";
+        afterCode = "§kniM";
 
         String colorCode;
         if (brightness < 0.25f) {

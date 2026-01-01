@@ -29,7 +29,7 @@ public class GithubReleaseFetcher {
         return json.get("tag_name").getAsString();
     }
 
-    public static void downloadLatestRelease(String user, String repo, String downloadPath) throws Exception {
+    public static boolean downloadLatestRelease(String user, String repo, String downloadPath) throws Exception {
         String apiUrl = "https://api.github.com/repos/" + user + "/" + repo + "/releases/latest";
 
         URL url = new URL(apiUrl);
@@ -77,5 +77,6 @@ public class GithubReleaseFetcher {
         inStream.close();
 
         System.out.println("Finished Downloading: " + downloadPath + "/" + fileName);
+        return true;
     }
 }

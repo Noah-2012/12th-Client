@@ -18,10 +18,10 @@ public class HotbarHelper {
     private static Field selectedField;
 
     private static void initSelectedField() {
-        if (selectedField != null) return; // Nur einmal suchen
+        if (selectedField != null) return; // Search only once
 
         try {
-            // Versuche verschiedene Feldnamen (für 1.21.10: Yarn Mappings)
+            // Try different field names (for 1.21.10: Yarn Mappings)
             String[] possibleNames = {"field_7545", "selectedSlot", "m", "selected", "f_19829_", "currentItem", "p_19829_"};
             for (String name : possibleNames) {
                 try {
@@ -34,7 +34,7 @@ public class HotbarHelper {
             }
 
             TwelfthClient.LOGGER.warn("Could not find selected field in PlayerInventory class!");
-            // Logge alle Felder für Debugging
+            // Log all fields for debugging
             TwelfthClient.LOGGER.info("Available fields in PlayerInventory:");
             for (Field f : net.minecraft.entity.player.PlayerInventory.class.getDeclaredFields()) {
                 TwelfthClient.LOGGER.info("  - " + f.getName() + " (" + f.getType().getSimpleName() + ")");
@@ -45,23 +45,23 @@ public class HotbarHelper {
     }
 
     public static void register() {
-        TwelfthClient.LOGGER.info("HotbarHelper registriert!");
+        TwelfthClient.LOGGER.info("HotbarHelper registered!");
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             try {
                 PlayerEntity player = MinecraftClient.getInstance().player;
                 if (player == null) return;
 
-                // Initialisiere das selected-Feld beim ersten Tick in der Welt
+                // Initialize the selected field on the first tick in the world
                 initSelectedField();
 
-                // Prüfe ob Right Shift gedrückt ist
+                // Check if Right Shift is pressed
                 boolean rightShiftDown = GLFW.glfwGetKey(
                         GLFW.glfwGetCurrentContext(),
                         GLFW.GLFW_KEY_RIGHT_SHIFT
                 ) == GLFW.GLFW_PRESS;
 
-                // Prüfe ob J gedrückt ist
+                // Check if J is pressed
                 boolean jDown = GLFW.glfwGetKey(
                         GLFW.glfwGetCurrentContext(),
                         GLFW.GLFW_KEY_J
@@ -71,7 +71,7 @@ public class HotbarHelper {
                     TwelfthClient.LOGGER.info("RightShift: " + rightShiftDown + ", J: " + jDown);
                 }
 
-                // Nur beim Drücken (Flanke), nicht beim Halten
+                // Only when pressing (edge), not when holding
                 boolean jWasPressed = false;
                 if (jDown && !lastRightShiftState) {
                     jWasPressed = true;
@@ -109,7 +109,7 @@ public class HotbarHelper {
             if (selectedField != null) {
                 selectedField.setInt(player.getInventory(), slot);
             } else {
-                // Fallback: versuche mit unterschiedlichen Feldnamen
+                // Fallback: try using different field names
                 Field field = null;
                 for (String name : new String[]{"selectedSlot", "m", "selected"}) {
                     try {
