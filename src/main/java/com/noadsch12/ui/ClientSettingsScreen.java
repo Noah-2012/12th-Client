@@ -1,5 +1,6 @@
 package com.noadsch12.ui;
 
+import io.wispforest.owo.ui.core.ParentComponent;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -223,10 +224,13 @@ public class ClientSettingsScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-        if (this.parent == null) {
+        if (this.client.world != null) {
             // --- IN-GAME HUD MODE ---
             // This renders the blurred world background when opened via Keybind
-            context.fill(0, 0, this.width, this.height, 0x90101010);
+            //context.applyBlur();
+            //context.fill(0, 0, this.width, this.height, 0x90101010);
+            BlurHandler.executeBlur(context, this.width, this.height, 5.0f);
+            super.render(context, mouseX, mouseY, deltaTicks);
         } else {
             // --- MAIN MENU MODE ---
             // Your custom Particle/Dot background logic
@@ -250,7 +254,7 @@ public class ClientSettingsScreen extends Screen {
                     }
                 }
             }
-            // Renders the dirt background (standard for menus)
+
             super.render(context, mouseX, mouseY, deltaTicks);
         }
 

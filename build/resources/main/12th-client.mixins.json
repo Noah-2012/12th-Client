@@ -1,14 +1,23 @@
 {
-	"required": true,
-	"package": "com.noadsch12.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"TitleScreenMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"overwrites": {
-		"requireAnnotations": true
-	}
+  "required": true,
+  "package": "com.noadsch12.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "EntityRendererMixin",
+    "ProjectileTrailMixin",
+    "TitleScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "client": [
+    "ClientPlayerEntityMixin",
+    "EntityRenderManagerMixin",
+    "ProjectileDing",
+    "WorldRendererAccessor",
+    "WorldRendererMixin"
+  ]
 }
