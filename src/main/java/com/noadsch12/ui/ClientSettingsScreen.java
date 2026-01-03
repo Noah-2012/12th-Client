@@ -103,6 +103,8 @@ public class ClientSettingsScreen extends Screen {
                 .size(bWidth, bHeight)
                 .build());
 
+        int cheatsX = centerX + 100;
+
         this.addDrawableChild(ButtonWidget.builder(
                         Text.literal("Auto Totem: " + (AutoTotemEnabled ? "§aON" : "§cOFF")),
                         btn -> {
@@ -110,7 +112,7 @@ public class ClientSettingsScreen extends Screen {
                             btn.setMessage(Text.literal("Auto Totem: " + (AutoTotemEnabled ? "§aON" : "§cOFF")));
                         }
                 )
-                .position(utilsX, centerY + 28)
+                .position(cheatsX, centerY - 20)
                 .size(bWidth, bHeight)
                 .build());
 
@@ -121,7 +123,7 @@ public class ClientSettingsScreen extends Screen {
                             btn.setMessage(Text.literal("Auto Armor: " + (AutoArmorEnabled ? "§aON" : "§cOFF")));
                         }
                 )
-                .position(utilsX, centerY + 52)
+                .position(cheatsX, centerY + 4)
                 .size(bWidth, bHeight)
                 .build());
 
@@ -132,7 +134,7 @@ public class ClientSettingsScreen extends Screen {
                             btn.setMessage(Text.literal("Auto Refill: " + (AutoRefillEnabled ? "§aON" : "§cOFF")));
                         }
                 )
-                .position(utilsX, centerY + 76)
+                .position(cheatsX, centerY + 28)
                 .size(bWidth, bHeight)
                 .build());
 
@@ -143,7 +145,7 @@ public class ClientSettingsScreen extends Screen {
                             btn.setMessage(Text.literal("Auto Tool: " + (AutoToolEnabled ? "§aON" : "§cOFF")));
                         }
                 )
-                .position(utilsX, centerY + 100)
+                .position(cheatsX, centerY + 52)
                 .size(bWidth, bHeight)
                 .build());
 
@@ -270,7 +272,10 @@ public class ClientSettingsScreen extends Screen {
         context.drawCenteredTextWithShadow(this.textRenderer, "Rendering & Accessories", centerX, centerY - 40, 0xFFFFAA00);
         context.drawItem(new ItemStack(Items.SPYGLASS), centerX - 6, centerY - 62);
 
-        int previewX = centerX + 85;
+        context.drawTextWithShadow(this.textRenderer, "Cheats", centerX + 160, centerY - 40, 0xFFFFAA00);
+        context.drawItem(new ItemStack(Items.BARRIER), centerX + 195, centerY - 45);
+
+        int previewX = centerX + 83;
         int previewY = centerY + 30;
 
         ItemStack previewStack = switch (trailIndex) {

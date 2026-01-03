@@ -31,6 +31,9 @@ public class TwelfthCommand {
             if (ClientSettingsScreen.EntityCullingEnabled && !cullingEnabled && client.player != null && client.world != null) {
                 EntityCulling.setEnabled(true);
                 cullingEnabled = true;
+            } else if (!ClientSettingsScreen.EntityCullingEnabled && cullingEnabled && client.player != null && client.world != null) {
+                EntityCulling.setEnabled(false);
+                cullingEnabled = false;
             }
 
             if (!espEnabled && client.player != null && client.world != null) {

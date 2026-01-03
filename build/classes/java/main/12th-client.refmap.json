@@ -1,5 +1,10 @@
 {
   "mappings": {
+    "com/noadsch12/mixin/ChatAnimationMixin": {
+      "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V": "Lnet/minecraft/class_338;method_44811(Lnet/minecraft/class_2561;Lnet/minecraft/class_7469;Lnet/minecraft/class_7591;)V",
+      "addVisibleMessage": "Lnet/minecraft/class_338;method_1815(Lnet/minecraft/class_303;)V",
+      "render": "Lnet/minecraft/class_338;method_1805(Lnet/minecraft/class_332;IIIZ)V"
+    },
     "com/noadsch12/mixin/ClientPlayerEntityMixin": {
       "tick": "Lnet/minecraft/class_746;method_5773()V"
     },
@@ -29,6 +34,11 @@
   },
   "data": {
     "named:intermediary": {
+      "com/noadsch12/mixin/ChatAnimationMixin": {
+        "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V": "Lnet/minecraft/class_338;method_44811(Lnet/minecraft/class_2561;Lnet/minecraft/class_7469;Lnet/minecraft/class_7591;)V",
+        "addVisibleMessage": "Lnet/minecraft/class_338;method_1815(Lnet/minecraft/class_303;)V",
+        "render": "Lnet/minecraft/class_338;method_1805(Lnet/minecraft/class_332;IIIZ)V"
+      },
       "com/noadsch12/mixin/ClientPlayerEntityMixin": {
         "tick": "Lnet/minecraft/class_746;method_5773()V"
       },

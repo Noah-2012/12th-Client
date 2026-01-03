@@ -18,6 +18,7 @@
     "EntityRenderManagerMixin",
     "ProjectileDing",
     "WorldRendererAccessor",
-    "WorldRendererMixin"
+    "WorldRendererMixin",
+    "ChatAnimationMixin"
   ]
 }
