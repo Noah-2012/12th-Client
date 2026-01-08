@@ -14,11 +14,14 @@
     "requireAnnotations": true
   },
   "client": [
+    "ChatAnimationMixin",
     "ClientPlayerEntityMixin",
+    "DebugHudMixin",
     "EntityRenderManagerMixin",
+    "InGameHudMixin",
+    "KeyboardMixin",
     "ProjectileDing",
     "WorldRendererAccessor",
-    "WorldRendererMixin",
-    "ChatAnimationMixin"
+    "WorldRendererMixin"
   ]
 }

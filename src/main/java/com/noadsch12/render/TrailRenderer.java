@@ -17,7 +17,7 @@ public class TrailRenderer {
     public static void addPoint(UUID id, Vec3d pos) {
         trails.computeIfAbsent(id, k -> new ArrayList<>()).add(pos);
         if (trails.get(id).size() > MAX_POINTS) {
-            trails.get(id).remove(0);
+            trails.get(id).removeFirst();
         }
     }
 

@@ -1,6 +1,6 @@
 package com.noadsch12.ui;
 
-import io.wispforest.owo.ui.core.ParentComponent;
+import com.noadsch12.TwelfthClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -49,8 +49,9 @@ public class ClientSettingsScreen extends Screen {
     public static boolean AutoArmorEnabled = true;
     public static boolean AutoRefillEnabled = true;
     public static boolean AutoToolEnabled = true;
+    public static boolean BetterChatEnabled = true;
     private static final String[] TRAIL_NAMES = {"Totem", "Explosion", "Hearts", "Line Trail"};
-    private static final String[] TRAIL_COLORS = {"Red", "Blue", "Green", "White", "Black"};
+    private static final String[] TRAIL_COLORS = {"§cRed§r", "§9Blue§r", "§aGreen§r", "§fWhite§r", "§0Black§r"};
     public static int trailIndex = 0;
     public static int trailColorIndex = 0;
 
@@ -80,6 +81,7 @@ public class ClientSettingsScreen extends Screen {
 
         int utilsX = centerX - 250;
 
+
         // Jump to Food Toggle Button
         this.addDrawableChild(ButtonWidget.builder(
                         Text.literal("Jump to Food: " + (jumpToFoodEnabled ? "§aON" : "§cOFF")),
@@ -100,6 +102,17 @@ public class ClientSettingsScreen extends Screen {
                         }
                 )
                 .position(utilsX, centerY + 4)
+                .size(bWidth, bHeight)
+                .build());
+
+        this.addDrawableChild(ButtonWidget.builder(
+                        Text.literal("Better Chat: " + (BetterChatEnabled ? "§aON" : "§cOFF")),
+                        btn -> {
+                            BetterChatEnabled =! BetterChatEnabled;
+                            btn.setMessage(Text.literal("Better Chat: " + (BetterChatEnabled ? "§aON" : "§cOFF")));
+                        }
+                )
+                .position(utilsX, centerY + 28)
                 .size(bWidth, bHeight)
                 .build());
 
@@ -214,14 +227,18 @@ public class ClientSettingsScreen extends Screen {
 
         this.shouldCloseOnEsc();
 
+
         // Back Button
-        this.addDrawableChild(ButtonWidget.builder(
-                        Text.literal("Back"),
-                        btn -> this.close()
-                )
-                .position(centerX - 50, this.height - 40)
-                .size(100, 20)
-                .build());
+
+        if (!TwelfthClient.fastguiopen) {
+            this.addDrawableChild(ButtonWidget.builder(
+                            Text.literal("Back"),
+                            btn -> this.close()
+                    )
+                    .position(centerX - 50, this.height - 40)
+                    .size(100, 20)
+                    .build());
+        }
     }
 
     @Override
@@ -272,8 +289,8 @@ public class ClientSettingsScreen extends Screen {
         context.drawCenteredTextWithShadow(this.textRenderer, "Rendering & Accessories", centerX, centerY - 40, 0xFFFFAA00);
         context.drawItem(new ItemStack(Items.SPYGLASS), centerX - 6, centerY - 62);
 
-        context.drawTextWithShadow(this.textRenderer, "Cheats", centerX + 160, centerY - 40, 0xFFFFAA00);
-        context.drawItem(new ItemStack(Items.BARRIER), centerX + 195, centerY - 45);
+        context.drawTextWithShadow(this.textRenderer, "Cheats", centerX + 158, centerY - 40, 0xFFFFAA00);
+        context.drawItem(new ItemStack(Items.BARRIER), centerX + 193, centerY - 45);
 
         int previewX = centerX + 83;
         int previewY = centerY + 30;

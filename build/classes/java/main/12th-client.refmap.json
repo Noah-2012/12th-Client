@@ -8,11 +8,21 @@
     "com/noadsch12/mixin/ClientPlayerEntityMixin": {
       "tick": "Lnet/minecraft/class_746;method_5773()V"
     },
+    "com/noadsch12/mixin/DebugHudMixin": {
+      "render": "Lnet/minecraft/class_340;method_1846(Lnet/minecraft/class_332;)V",
+      "shouldShowDebugHud": "Lnet/minecraft/class_340;method_53536()Z"
+    },
     "com/noadsch12/mixin/EntityRenderManagerMixin": {
       "render": "Lnet/minecraft/class_761;method_22710(Lnet/minecraft/class_9922;Lnet/minecraft/class_9779;ZLnet/minecraft/class_4184;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V"
     },
     "com/noadsch12/mixin/EntityRendererMixin": {
       "shouldRender": "Lnet/minecraft/class_897;method_3933(Lnet/minecraft/class_1297;Lnet/minecraft/class_4604;DDD)Z"
+    },
+    "com/noadsch12/mixin/InGameHudMixin": {
+      "render": "Lnet/minecraft/class_329;method_1753(Lnet/minecraft/class_332;Lnet/minecraft/class_9779;)V"
+    },
+    "com/noadsch12/mixin/KeyboardMixin": {
+      "onKey": "Lnet/minecraft/class_309;method_1466(JILnet/minecraft/class_11908;)V"
     },
     "com/noadsch12/mixin/ProjectileDing": {
       "onEntityHit": "Lnet/minecraft/class_1665;method_7454(Lnet/minecraft/class_3966;)V"
@@ -42,11 +52,21 @@
       "com/noadsch12/mixin/ClientPlayerEntityMixin": {
         "tick": "Lnet/minecraft/class_746;method_5773()V"
       },
+      "com/noadsch12/mixin/DebugHudMixin": {
+        "render": "Lnet/minecraft/class_340;method_1846(Lnet/minecraft/class_332;)V",
+        "shouldShowDebugHud": "Lnet/minecraft/class_340;method_53536()Z"
+      },
       "com/noadsch12/mixin/EntityRenderManagerMixin": {
         "render": "Lnet/minecraft/class_761;method_22710(Lnet/minecraft/class_9922;Lnet/minecraft/class_9779;ZLnet/minecraft/class_4184;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V"
       },
       "com/noadsch12/mixin/EntityRendererMixin": {
         "shouldRender": "Lnet/minecraft/class_897;method_3933(Lnet/minecraft/class_1297;Lnet/minecraft/class_4604;DDD)Z"
+      },
+      "com/noadsch12/mixin/InGameHudMixin": {
+        "render": "Lnet/minecraft/class_329;method_1753(Lnet/minecraft/class_332;Lnet/minecraft/class_9779;)V"
+      },
+      "com/noadsch12/mixin/KeyboardMixin": {
+        "onKey": "Lnet/minecraft/class_309;method_1466(JILnet/minecraft/class_11908;)V"
       },
       "com/noadsch12/mixin/ProjectileDing": {
         "onEntityHit": "Lnet/minecraft/class_1665;method_7454(Lnet/minecraft/class_3966;)V"

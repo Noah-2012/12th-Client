@@ -1,5 +1,6 @@
 package com.noadsch12.mixin;
 
+import com.noadsch12.ui.ClientSettingsScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -36,10 +37,13 @@ import java.util.HashSet;
 @Mixin(ChatHud.class)
 public abstract class ChatAnimationMixin {
 
-    @Shadow @Final private MinecraftClient client;
+    @Shadow private MinecraftClient client;
     @Shadow @Final private List<ChatHudLine.Visible> visibleMessages;
     @Shadow public abstract int getWidth();
     @Shadow public abstract double getChatScale();
+
+    @Unique
+    private boolean popped = false;
 
     @Unique
     private final Map<String, Identifier> skinCache = new HashMap<>();
@@ -52,7 +56,6 @@ public abstract class ChatAnimationMixin {
     private long lastMessageTime = 0;
 
     @Unique
-    // Das \\s* erlaubt beliebig viele Leerzeichen am Anfang, bevor das < kommt
     private static final Pattern PLAYER_NAME_PATTERN_SERVER1 = Pattern.compile("^\\s*([^:]+):");
 
     @Unique
@@ -63,12 +66,15 @@ public abstract class ChatAnimationMixin {
 
     @Inject(method = "addVisibleMessage", at = @At("TAIL"))
     private void onAddMessage(ChatHudLine line, CallbackInfo ci) {
+        if (!ClientSettingsScreen.BetterChatEnabled) return;
         this.lastMessageTime = System.currentTimeMillis();
     }
 
     @Inject(method = "render", at = @At("HEAD"))
     private void startAnimation(DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
+        if (!ClientSettingsScreen.BetterChatEnabled) return;
         context.getMatrices().pushMatrix();
+        popped = true;
 
         if (!visibleMessages.isEmpty()) {
             long delta = System.currentTimeMillis() - lastMessageTime;
@@ -85,25 +91,22 @@ public abstract class ChatAnimationMixin {
 
     @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V", at = @At("HEAD"), argsOnly = true)
     private Text addSpaceBeforeMessage(Text text) {
-        // Wir erstellen ein neues Text-Objekt:
-        // 4 Leerzeichen entsprechen ca. 12-16 Pixeln Platz für den Kopf
+        if (!ClientSettingsScreen.BetterChatEnabled) return text;
         return Text.literal("  ").append(text);
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     private void renderPlayerHeads(DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
+        if (!ClientSettingsScreen.BetterChatEnabled) return;
         if (visibleMessages.isEmpty() || client.options.getChatVisibility().getValue() == ChatVisibility.HIDDEN) return;
 
-        // 1. Chat-Abmessungen exakt wie Minecraft berechnen
-        int chatWidth = (int) (this.getWidth()); // Methode aus ChatHud
+        int chatWidth = (int) (this.getWidth());
         int chatHeight = (int) (focused ? client.inGameHud.getChatHud().getHeight() : client.inGameHud.getChatHud().getHeight() * client.options.getChatHeightUnfocused().getValue());
 
         int windowHeight = context.getScaledWindowHeight();
         int chatX = 2;
         int chatY = windowHeight - 40;
 
-        // 2. SCISSOR START: Alles außerhalb dieses Bereichs wird weggeschnitten
-        // Wir setzen den Bereich auf die exakte Chat-Box
         if (focused) {
             context.enableScissor(0, windowHeight - 40 - chatHeight, chatWidth + 20, windowHeight - 40);
         } else {
@@ -135,35 +138,28 @@ public abstract class ChatAnimationMixin {
 
                     context.drawTexture(RenderPipelines.GUI_TEXTURED, skinTexture,
                             chatX, lineY,
-                            8, 8,   // Zielgröße
-                            8, 8,   // UV Gesicht
-                            64, 64,   // UV Größe
+                            8, 8,
+                            8, 8,
+                            64, 64,
                             64, 64,
                             color);
                 }
             }
         }
 
-        // 3. SCISSOR ENDE: Wichtig, sonst wird das restliche GUI auch abgeschnitten!
         context.disableScissor();
     }
 
     @Unique
     private int getMessageOpacity(ChatHudLine.Visible line, int currentTick) {
-        // 1. Alter der Nachricht berechnen
         int age = currentTick - line.addedTime();
 
-        // Minecraft Standard: 200 Ticks (10 Sek) volle Sichtbarkeit
         if (age < 200) {
             return 255;
         }
 
-        // 2. Ausfaden berechnen
-        // Nach 200 Ticks wird der Wert innerhalb von 40 Ticks von 255 auf 0 gesenkt
-        // Formel: 255 - (Zeitüberschreitung * 255 / Fading-Dauer)
         int opacity = 255 - (age - 200) * 255 / 40;
 
-        // Wert zwischen 0 und 255 halten
         return Math.max(0, Math.min(255, opacity));
     }
 
@@ -180,20 +176,16 @@ public abstract class ChatAnimationMixin {
     }
 
     private Identifier getPlayerSkinTexture(String playerName) {
-        // 1. Falls der Name ungültig ist, sofort abbrechen
         if (playerName == null || playerName.isEmpty()) return null;
 
-        // 2. Prüfen, ob der Skin bereits im Cache ist
         if (skinCache.containsKey(playerName)) {
             return skinCache.get(playerName);
         }
 
-        // 3. Negative Caching: Wenn der Skin vor kurzem fehlgeschlagen ist, nicht erneut versuchen
         if (failedSkins.contains(playerName)) {
-            return null; // Hier könnte man auch einen Standard-Steve-Identifier zurückgeben
+            return null;
         }
 
-        // 4. Prüfen, ob wir gerade laden
         if (loadingSkins.contains(playerName)) {
             return null;
         }
@@ -202,8 +194,6 @@ public abstract class ChatAnimationMixin {
 
         CompletableFuture.runAsync(() -> {
             try {
-                // Namen bereinigen: Nur Buchstaben, Zahlen und Unterstriche erlauben
-                // Das entfernt Emojis und Präfixe wie + oder . (häufig bei Bedrock-Spielern)
                 String cleanName = playerName.replaceAll("[^a-zA-Z0-9_]", "");
 
                 if (cleanName.isEmpty()) {
@@ -232,7 +222,7 @@ public abstract class ChatAnimationMixin {
                                     image
                             );
 
-                            Identifier id = Identifier.of("noadsch-chat", "skins/" + playerName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_]", ""));
+                            Identifier id = Identifier.of("twelfth-chat", "skins/" + playerName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_]", ""));
                             client.getTextureManager().registerTexture(id, texture);
 
                             skinCache.put(playerName, id);
@@ -244,12 +234,10 @@ public abstract class ChatAnimationMixin {
                     });
                 }
             } catch (Exception e) {
-                // Fehler im Log unterdrücken und in failedSkins speichern
                 failedSkins.add(playerName);
                 loadingSkins.remove(playerName);
-                // Wir loggen nur echte Fehler, keine "nicht gefunden" Meldungen
                 if (!(e instanceof FileNotFoundException)) {
-                    // Optional: System.err.println("Fehler beim Laden von " + playerName + ": " + e.getMessage());
+
                 }
             }
         });
@@ -259,6 +247,9 @@ public abstract class ChatAnimationMixin {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void endAnimation(DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
-        context.getMatrices().popMatrix();
+        if (popped) {
+            context.getMatrices().popMatrix();
+            popped = false;
+        }
     }
 }

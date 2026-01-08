@@ -5,3 +5,26 @@ accessible method net/minecraft/client/gui/screen/Screen addDrawableChild (Lnet/
 accessible field net/minecraft/client/gui/screen/Screen client Lnet/minecraft/client/MinecraftClient;
 accessible field net/minecraft/client/render/GameRenderer buffers Lnet/minecraft/client/render/BufferBuilderStorage;
 accessible field com/mojang/blaze3d/pipeline/RenderPipeline location Lnet/minecraft/util/Identifier;
+accessible field net/minecraft/client/render/Camera$Projection center Lnet/minecraft/util/math/Vec3d;
+accessible method com/mojang/blaze3d/pipeline/RenderPipeline$Builder withSnippet (Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;)V
+accessible method com/mojang/blaze3d/pipeline/RenderPipeline$Builder <init> ()V
+
+accessible   class   net/minecraft/client/texture/PlayerSkinProvider$FileCache
+accessible   class   net/minecraft/client/particle/FireworksSparkParticle$Explosion
+accessible   class   net/minecraft/network/packet/c2s/play/PlayerInteractEntityC2SPacket$InteractType
+accessible   class   net/minecraft/network/packet/c2s/play/PlayerInteractEntityC2SPacket$InteractAtHandler
+accessible   class   net/minecraft/network/packet/c2s/play/PlayerInteractEntityC2SPacket$InteractTypeHandler
+accessible   class   net/minecraft/client/world/ClientChunkManager$ClientChunkMap
+
+accessible   class   net/minecraft/client/texture/MapTextureManager$MapTexture
+accessible   field   net/minecraft/client/texture/MapTextureManager$MapTexture texture Lnet/minecraft/client/texture/NativeImageBackedTexture;
+
+accessible   class   net/minecraft/client/gui/screen/ingame/BeaconScreen$EffectButtonWidget
+accessible   class   net/minecraft/client/gui/screen/ingame/BeaconScreen$DoneButtonWidget
+accessible   class   net/minecraft/client/gui/screen/ingame/BeaconScreen$CancelButtonWidget
+
+accessible   class   net/minecraft/client/resource/ResourceReloadLogger$ReloadState
+
+accessible   class   com/mojang/blaze3d/opengl/GlStateManager$CapabilityTracker
+
+accessible   field   net/minecraft/client/render/command/OrderedRenderCommandQueueImpl batchingQueues Lit/unimi/dsi/fastutil/ints/Int2ObjectAVLTreeMap;

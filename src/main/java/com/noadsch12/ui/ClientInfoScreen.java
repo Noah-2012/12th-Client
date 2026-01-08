@@ -77,7 +77,8 @@ public class ClientInfoScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         // Background
-        this.renderBackground(context, mouseX, mouseY, delta);
+        //this.renderBackground(context, mouseX, mouseY, delta);
+        // ^ makes an error because of super.render at the end of the Function
 
         // Semi-transparent overlay
         context.fill(0, 0, this.width, this.height, 0x88000000);

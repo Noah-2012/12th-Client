@@ -2,15 +2,10 @@ package com.noadsch12.mixin;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.noadsch12.render.TrailRenderer;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.render.BufferBuilderStorage;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.ObjectAllocator;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class WorldRendererMixin {
 
     // This shadow gives us access to the game's main vertex consumers
-    @Shadow @Final private BufferBuilderStorage bufferBuilders;
+    @Shadow private BufferBuilderStorage bufferBuilders;
 
     @Inject(
             method = "render",

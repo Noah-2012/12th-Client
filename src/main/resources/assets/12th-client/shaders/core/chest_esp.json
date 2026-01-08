@@ -1,0 +1,15 @@
+{
+  "vertex": "twelfth-client:chest_esp",
+  "fragment": "twelfth-client:chest_esp",
+  "attributes": [
+    "Position"
+  ],
+  "samplers": [
+    { "name": "DepthSampler" }
+  ],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4" },
+    { "name": "ProjMat", "type": "matrix4x4" },
+    { "name": "Color", "type": "float4" }
+  ]
+}
