@@ -1,6 +1,6 @@
 package com.noadsch12.render;
 
-import com.noadsch12.ui.ClientSettingsScreen;
+import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -35,7 +35,6 @@ public class TrailRenderer {
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
         for (List<Vec3d> points : trails.values()) {
-            System.out.println("Rendering trail with " + points.size() + " points"); // DEBUG
             for (int i = 0; i < points.size() - 1; i++) {
                 Vec3d start = points.get(i);
                 Vec3d end = points.get(i + 1);
@@ -68,7 +67,6 @@ public class TrailRenderer {
             }
         }
 
-        // Like your ESP, we let the provider handle drawing
         if (vertexConsumers instanceof VertexConsumerProvider.Immediate immediate) {
             immediate.draw(RenderLayer.getLines());
         }

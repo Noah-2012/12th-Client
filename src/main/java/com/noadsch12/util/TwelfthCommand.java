@@ -1,18 +1,25 @@
 package com.noadsch12.util;
 
-import com.noadsch12.render.EntityCulling;
-import com.noadsch12.render.EntityESP;
-import com.noadsch12.ui.ClientSettingsScreen;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.noadsch12.look.ItemHexManager;
+import com.noadsch12.render.entity.EntityCulling;
+import com.noadsch12.render.entity.EntityESP;
+import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 
 public class TwelfthCommand {
     private static boolean commandSent = false;
     private static boolean cullingEnabled = false;
     private static boolean espEnabled = false;
+
+    private static final SimpleCommandExceptionType INVALID_HEX_LENGTH =
+            new SimpleCommandExceptionType(Text.literal("Hex value must be exactly 6 characters"));
 
     public static void register() {
         System.out.println("========== COMMANDSYSTEM REGISTERED ==========");
@@ -56,6 +63,23 @@ public class TwelfthCommand {
                                 }
                                 return 1;
                             }))
+                    .then(ClientCommandManager.literal("getitem")
+                            .then(ClientCommandManager.argument("hex", StringArgumentType.string())
+                                    .executes(ctx -> {
+                                        String hex = StringArgumentType.getString(ctx, "hex").replace("#", "");
+
+                                        // Adjusted for 3 characters
+                                        if (hex.length() != 3) {
+                                            sendMessage("§cHex value must be exactly 3 characters (e.g., A1F)");
+                                            return 0;
+                                        }
+
+                                        String result = ItemHexManager.getItem(hex);
+                                        sendMessage(result);
+                                        return 1;
+                                    })
+                            )
+                    )
                     .then(ClientCommandManager.literal("culling")
                             .then(ClientCommandManager.literal("on")
                                     .executes(ctx -> {

@@ -1,8 +1,8 @@
 package com.noadsch12.mixin;
 
-import com.noadsch12.ui.ClientSettingsScreen;
-import com.noadsch12.ui.ClientInfoScreen;
-import com.noadsch12.ui.AnimatedButtonWidget;
+import com.noadsch12.ui.screens.ClientSettingsScreen;
+import com.noadsch12.ui.screens.ClientInfoScreen;
+import com.noadsch12.ui.widgets.AnimatedButtonWidget;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -22,7 +22,7 @@ import static com.noadsch12.BasicGlobals.getButtonMiddleX;
 public abstract class TitleScreenMixin {
 
     @Unique
-    private static final Identifier CLIENT_LOGO = Identifier.of("12th-client", "textures/gui/logo2.png");
+    private static final Identifier CLIENT_LOGO = Identifier.of("12th-client", "logo2.png");
 
     @Unique
     private int logoX1, logoY1, logoX2, logoY2;

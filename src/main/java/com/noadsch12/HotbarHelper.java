@@ -1,6 +1,6 @@
 package com.noadsch12;
 
-import com.noadsch12.ui.ClientSettingsScreen;
+import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

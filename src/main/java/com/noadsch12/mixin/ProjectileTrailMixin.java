@@ -1,7 +1,7 @@
 package com.noadsch12.mixin;
 
 import com.noadsch12.render.TrailRenderer;
-import com.noadsch12.ui.ClientSettingsScreen;
+import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;

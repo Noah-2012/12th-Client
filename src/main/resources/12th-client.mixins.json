@@ -4,6 +4,8 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "EntityRendererMixin",
+    "ItemEntityMixin",
+    "ItemStackMixin",
     "ProjectileTrailMixin",
     "TitleScreenMixin"
   ],
@@ -16,11 +18,18 @@
   "client": [
     "ChatAnimationMixin",
     "ClientPlayerEntityMixin",
+    "DamageTiltMixin",
     "DebugHudMixin",
     "EntityRenderManagerMixin",
+    "ExplosionLargeParticleMixin",
+    "ExplosionSmokeParticleMixin",
     "InGameHudMixin",
     "KeyboardMixin",
+    "MinecraftClientMixin",
     "ProjectileDing",
+    "ScoreboardMixin",
+    "TotemAnimationMixin",
+    "TotemParticleMixin",
     "WorldRendererAccessor",
     "WorldRendererMixin"
   ]

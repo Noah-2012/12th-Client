@@ -1,10 +1,10 @@
 package com.noadsch12.mixin;
 
-import com.noadsch12.ui.ClientSettingsScreen;
-import com.noadsch12.util.AutoArmor;
-import com.noadsch12.util.AutoRefill;
-import com.noadsch12.util.AutoTool;
-import com.noadsch12.util.AutoTotem;
+import com.noadsch12.ui.screens.ClientSettingsScreen;
+import com.noadsch12.cheats.AutoArmor;
+import com.noadsch12.cheats.AutoRefill;
+import com.noadsch12.cheats.AutoTool;
+import com.noadsch12.cheats.AutoTotem;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

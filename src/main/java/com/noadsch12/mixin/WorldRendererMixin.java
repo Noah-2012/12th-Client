@@ -23,10 +23,8 @@ public class WorldRendererMixin {
             at = @At("TAIL")
     )
     private void onRender(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, Matrix4f positionMatrix, Matrix4f matrix4f, Matrix4f projectionMatrix, GpuBufferSlice fogBuffer, Vector4f fogColor, boolean renderSky, CallbackInfo ci) {
-        // Use the bufferBuilders shadow to get the entity consumers
         VertexConsumerProvider consumers = this.bufferBuilders.getEntityVertexConsumers();
 
-        // Pass the arguments to your working TrailRenderer logic
         TrailRenderer.render(camera, consumers, positionMatrix);
     }
 }

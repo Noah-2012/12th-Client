@@ -1,6 +1,6 @@
 package com.noadsch12.mixin;
 
-import com.noadsch12.render.EntityCulling;
+import com.noadsch12.render.entity.EntityCulling;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.entity.Entity;
