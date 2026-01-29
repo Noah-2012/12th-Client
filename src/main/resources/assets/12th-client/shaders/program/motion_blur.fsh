@@ -1,21 +1,25 @@
-#version 150
+
+#version 120
 
 uniform sampler2D DiffuseSampler;
 uniform sampler2D PrevSampler;
 
-in vec2 texCoord;
-in vec2 oneTexel;
+varying vec2 texCoord;
+varying vec2 oneTexel;
 
 uniform vec2 InSize;
 
-uniform float BlendFactor = 0.75;
-
-out vec4 fragColor;
+uniform vec3 Phosphor = vec3(0.7, 0.0, 0.0);
+uniform float LerpFactor = 1.0;
 
 void main() {
-    vec4 CurrTexel = texture(DiffuseSampler, texCoord);
-    vec4 PrevTexel = texture(PrevSampler, texCoord);
+    vec4 CurrTexel = texture2D(DiffuseSampler, texCoord);
+    vec4 PrevTexel = texture2D(PrevSampler, texCoord);
+    float factor = Phosphor.r;
 
-    fragColor = mix(CurrTexel, PrevTexel, BlendFactor) + vec4(0.2, 0.0, 0.0, 0.0);
-    fragColor.w = 1.0;
+    if (Phosphor.g == 1) {
+        gl_FragColor = vec4(max(PrevTexel.rgb * vec3(factor), CurrTexel.rgb), 1.0);
+    } else {
+        gl_FragColor = vec4(mix(PrevTexel.rgb, CurrTexel.rgb, factor), 1.0);
+    }
 }

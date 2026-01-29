@@ -96,7 +96,7 @@ public enum BlockUtils
         return getState(pos).getHardness(MC.world, pos) < 0;
     }
 
-    private static VoxelShape getOutlineShape(BlockPos pos)
+    public static VoxelShape getOutlineShape(BlockPos pos)
     {
         return getState(pos).getOutlineShape(MC.world, pos);
     }

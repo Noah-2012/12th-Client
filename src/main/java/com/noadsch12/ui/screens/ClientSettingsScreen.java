@@ -4,9 +4,11 @@ import com.noadsch12.BasicGlobals;
 import com.noadsch12.TwelfthConfig;
 import com.noadsch12.ui.BlurHandler;
 import com.noadsch12.ui.widgets.ModernButton;
+import com.noadsch12.util.AntiAFK;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Style;
@@ -64,6 +66,14 @@ public class ClientSettingsScreen extends Screen {
     public static boolean NoDamageTiltEnabled = true;
     public static boolean AimbotEnabled = true;
     public static boolean EntityEspEnabled = true;
+    public static boolean ChestESPEnabled = true;
+    public static boolean CompassHudEnabled = true;
+    public static boolean PlayerESPEnabled = true;
+    public static boolean AntiWebEnabled = true;
+    public static boolean AntiAFKEnabled = true;
+    public static boolean NoSlowEnabled = true;
+    public static boolean AntiKnockbackEnabled = true;
+    public static boolean CriticalsEnabled = true;
 
     private static final String[] TRAIL_NAMES = {"Totem", "Explosion", "Hearts", "Line Trail"};
     private static final String[] TRAIL_COLORS = {"§cRed§r", "§9Blue§r", "§aGreen§r", "§fWhite§r", "§0Black§r"};
@@ -90,6 +100,13 @@ public class ClientSettingsScreen extends Screen {
         NoDamageTiltEnabled = true;
         AimbotEnabled = true;
         EntityEspEnabled = true;
+        ChestESPEnabled = true;
+        CompassHudEnabled = true;
+        PlayerESPEnabled = true;
+        AntiWebEnabled = true;
+        NoSlowEnabled = true;
+        AntiKnockbackEnabled = true;
+        CriticalsEnabled = true;
 
         trailIndex = 0;
         trailColorIndex = 0;
@@ -110,7 +127,7 @@ public class ClientSettingsScreen extends Screen {
         super.init();
 
         int centerX = this.width / 2;
-        int centerY = this.height / 2;
+        int centerY = (this.height / 2) - 50;
         int bWidth = 150;
         int bHeight = 20;
 
@@ -119,6 +136,18 @@ public class ClientSettingsScreen extends Screen {
 
         int utilsX = centerX - 250;
 
+        // Utils Bulk Buttons
+        this.addDrawableChild(new ModernButton(utilsX, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§aEnable All"), btn -> {
+            jumpToFoodEnabled = EntityCullingEnabled = BetterChatEnabled = ItemDisplayEnabled =
+                    BetterScoreboardEnabled = ShowKeystrokeSettingsEnabled = AntiAFKEnabled = true;
+            // Save all to config here if needed
+            refreshUI();
+        }));
+        this.addDrawableChild(new ModernButton(utilsX + bWidth / 2 + 2, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§cDisable All"), btn -> {
+            jumpToFoodEnabled = EntityCullingEnabled = BetterChatEnabled = ItemDisplayEnabled =
+                    BetterScoreboardEnabled = ShowKeystrokeSettingsEnabled = AntiAFKEnabled = false;
+            refreshUI();
+        }));
 
         this.addDrawableChild(new ModernButton(
                 utilsX,
@@ -180,6 +209,17 @@ public class ClientSettingsScreen extends Screen {
                     btn.setMessage(Text.literal("Better Scoreboard: " + (BetterScoreboardEnabled ? "§aON" : "§cOFF")));
                 }).withTooltip("Improves the Scoreboard with Design and Ordering"));
 
+        ModernButton outline_settings = new ModernButton(
+                utilsX,
+                centerY + 148,
+                bWidth,
+                bHeight,
+                Text.literal("Open Block Outline Settings"),
+                btn -> {
+                    this.client.setScreen(new BlockOutlineScreen(this));
+                    btn.setMessage(Text.literal("Open Block Outline Settings"));
+                });
+
         ModernButton keystroke_settings = new ModernButton(
                 utilsX,
                 centerY + 124,
@@ -187,7 +227,6 @@ public class ClientSettingsScreen extends Screen {
                 bHeight,
                 Text.literal("Open Keystroke Settings"),
                 btn -> {
-                    HideExplosionParticlesEnabled = !HideExplosionParticlesEnabled;
                     this.client.setScreen(new KeystrokesSettingsScreen(this));
                     btn.setMessage(Text.literal("Open Keystroke Settings"));
                 });
@@ -209,7 +248,36 @@ public class ClientSettingsScreen extends Screen {
 
         this.addDrawableChild(keystroke_settings);
 
+        this.addDrawableChild(outline_settings);
+
+        this.addDrawableChild(new ModernButton(
+                utilsX,
+                centerY + 172,
+                bWidth,
+                bHeight,
+                Text.literal("Anti AFK: " + (AntiAFKEnabled ? "§aON" : "§cOFF")),
+                btn -> {
+                    AntiAFKEnabled = !AntiAFKEnabled;
+                    AntiAFK.enabled = AntiAFKEnabled;
+                    TwelfthConfig.setValue("anti_afk_enabled", String.valueOf(AntiAFKEnabled));
+                    btn.setMessage(Text.literal("Anti AFK: " + (AntiAFKEnabled ? "§aON" : "§cOFF")));
+                }).withTooltip("Lets the Player jump every five Seconds"));
+
         int cheatsX = centerX + 100;
+
+        // Cheats Bulk Buttons
+        this.addDrawableChild(new ModernButton(cheatsX, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§aEnable All"), btn -> {
+            AutoTotemEnabled = AutoArmorEnabled = AutoRefillEnabled = AutoToolEnabled =
+                    NoDamageTiltEnabled = AimbotEnabled = ChestESPEnabled = PlayerESPEnabled =
+                            AntiWebEnabled = NoSlowEnabled = AntiKnockbackEnabled = true;
+            refreshUI();
+        }));
+        this.addDrawableChild(new ModernButton(cheatsX + bWidth / 2 + 2, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§cDisable All"), btn -> {
+            AutoTotemEnabled = AutoArmorEnabled = AutoRefillEnabled = AutoToolEnabled =
+                    NoDamageTiltEnabled = AimbotEnabled = ChestESPEnabled = PlayerESPEnabled =
+                            AntiWebEnabled = NoSlowEnabled = AntiKnockbackEnabled = false;
+            refreshUI();
+        }));
 
         this.addDrawableChild(new ModernButton(
                 cheatsX,
@@ -283,7 +351,91 @@ public class ClientSettingsScreen extends Screen {
                     btn.setMessage(Text.literal("Aimbot: " + (AimbotEnabled ? "§aON" : "§cOFF")));
                 }).withTooltip("Always moves the crosshair to the nearest Player"));
 
+        this.addDrawableChild(new ModernButton(
+                cheatsX,
+                centerY + 124,
+                bWidth,
+                bHeight,
+                Text.literal("Storage ESP: " + (ChestESPEnabled ? "§aON" : "§cOFF")),
+                btn -> {
+                    ChestESPEnabled= !ChestESPEnabled;
+                    TwelfthConfig.setValue("storage_esp_enabled", String.valueOf(ChestESPEnabled));
+                    btn.setMessage(Text.literal("Storage ESP: " + (ChestESPEnabled ? "§aON" : "§cOFF")));
+                }).withTooltip("Marks every Chest in ESP Radius and uses the CBCS\n(Chunk Block Cache System)"));
+
+        this.addDrawableChild(new ModernButton(
+                cheatsX,
+                centerY + 148,
+                bWidth,
+                bHeight,
+                Text.literal("Player ESP: " + (PlayerESPEnabled ? "§aON" : "§cOFF")),
+                btn -> {
+                    PlayerESPEnabled = !PlayerESPEnabled;
+                    TwelfthConfig.setValue("player_esp_enabled", String.valueOf(PlayerESPEnabled));
+                    btn.setMessage(Text.literal("Player ESP: " + (PlayerESPEnabled ? "§aON" : "§cOFF")));
+                }).withTooltip("Marks every Player in ESP Radius and uses the PUCS\n(Player UUID Cache System)"));
+
+        this.addDrawableChild(new ModernButton(
+                cheatsX,
+                centerY + 172,
+                bWidth,
+                bHeight,
+                Text.literal("Anti Web: " + (AntiWebEnabled ? "§aON" : "§cOFF")),
+                btn -> {
+                    AntiWebEnabled = !AntiWebEnabled;
+                    TwelfthConfig.setValue("anti_web_enabled", String.valueOf(AntiWebEnabled));
+                    btn.setMessage(Text.literal("Anti Web: " + (AntiWebEnabled ? "§aON" : "§cOFF")));
+                }).withTooltip("Removes the slow down when walking into a Web"));
+
+        this.addDrawableChild(new ModernButton(
+                cheatsX,
+                centerY + 196,
+                bWidth,
+                bHeight,
+                Text.literal("No Slow: " + (NoSlowEnabled ? "§aON" : "§cOFF")),
+                btn -> {
+                    NoSlowEnabled = !NoSlowEnabled;
+                    TwelfthConfig.setValue("no_slow_enabled", String.valueOf(NoSlowEnabled));
+                    btn.setMessage(Text.literal("No Slow: " + (NoSlowEnabled ? "§aON" : "§cOFF")));
+                }).withTooltip("Removes the slow down when using item like food\nor drawing a bow"));
+
+        this.addDrawableChild(new ModernButton(
+                cheatsX,
+                centerY + 220,
+                bWidth,
+                bHeight,
+                Text.literal("Anti Knockback: " + (AntiKnockbackEnabled ? "§aON" : "§cOFF")),
+                btn -> {
+                    AntiKnockbackEnabled = !AntiKnockbackEnabled;
+                    TwelfthConfig.setValue("anti_knockback_enabled", String.valueOf(AntiKnockbackEnabled));
+                    btn.setMessage(Text.literal("Anti Knockback: " + (AntiKnockbackEnabled ? "§aON" : "§cOFF")));
+                }).withTooltip("Removes the knockback by canceling the packet"));
+
+        this.addDrawableChild(new ModernButton(
+                cheatsX,
+                centerY + 244,
+                bWidth,
+                bHeight,
+                Text.literal("Criticals: " + (CriticalsEnabled ? "§aON" : "§cOFF")),
+                btn -> {
+                    CriticalsEnabled = !CriticalsEnabled;
+                    TwelfthConfig.setValue("criticals_enabled", String.valueOf(CriticalsEnabled));
+                    btn.setMessage(Text.literal("Criticals: " + (CriticalsEnabled ? "§aON" : "§cOFF")));
+                }).withTooltip("Manipulates the Server packet so you do Criticals everytime"));
+
         int renderX = centerX - (bWidth / 2);
+
+        // Rendering Bulk Buttons
+        this.addDrawableChild(new ModernButton(renderX, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§aEnable All"), btn -> {
+            HideTotemAnimEnabled = HideExplosionParticlesEnabled = EntityEspEnabled =
+                    CompassHudEnabled = ProjectileDingEnabled = ProjectileTrailEnabled = true;
+            refreshUI();
+        }));
+        this.addDrawableChild(new ModernButton(renderX + bWidth / 2 + 2, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§cDisable All"), btn -> {
+            HideTotemAnimEnabled = HideExplosionParticlesEnabled = EntityEspEnabled =
+                    CompassHudEnabled = ProjectileDingEnabled = ProjectileTrailEnabled = false;
+            refreshUI();
+        }));
 
         this.addDrawableChild(new ModernButton(
                 renderX,
@@ -319,11 +471,23 @@ public class ClientSettingsScreen extends Screen {
                     EntityEspEnabled = !EntityEspEnabled;
                     TwelfthConfig.setValue("entity_esp_enabled", String.valueOf(EntityEspEnabled));
                     btn.setMessage(Text.literal("Entity ESP: " + (EntityEspEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Makes Lines around Hitboxes from Entities\n(Green: peacefully, Yellow: not peacefully, Red: Player"));
+                }).withTooltip("Makes Lines around Hitboxes from Entities\n(Green: peacefully, Yellow: not peacefully, Red: Player)"));
+
+        this.addDrawableChild(new ModernButton(
+                renderX,
+                centerY + 52,
+                bWidth,
+                bHeight,
+                Text.literal("Compass HUD: " + (CompassHudEnabled ? "§aON" : "§cOFF")),
+                btn -> {
+                    CompassHudEnabled = !CompassHudEnabled;
+                    TwelfthConfig.setValue("compass_hud_enabled", String.valueOf(CompassHudEnabled));
+                    btn.setMessage(Text.literal("Compass HUD: " + (CompassHudEnabled ? "§aON" : "§cOFF")));
+                }).withTooltip("Makes a Compass in the top middle Screen that shows the Directions and Waypoints"));
 
         ModernButton trailColorButton = new ModernButton(
                 renderX,
-                centerY + 120,
+                centerY + 144,
                 btcWidth,
                 btcHeight,
                 Text.literal("Trail Color: " + TRAIL_COLORS[trailColorIndex]),
@@ -340,7 +504,7 @@ public class ClientSettingsScreen extends Screen {
 
         ModernButton trailButton = new ModernButton(
                 renderX,
-                centerY + 100,
+                centerY + 124,
                 bWidth,
                 bHeight,
                 Text.literal("Trail Mode: " + TRAIL_NAMES[trailIndex]),
@@ -359,7 +523,7 @@ public class ClientSettingsScreen extends Screen {
 
         this.addDrawableChild(new ModernButton(
                 renderX,
-                centerY + 52,
+                centerY + 76,
                 bWidth,
                 bHeight,
                 Text.literal("Projectile Ding: " + (ProjectileDingEnabled ? "§aON" : "§cOFF")),
@@ -371,7 +535,7 @@ public class ClientSettingsScreen extends Screen {
 
         this.addDrawableChild(new ModernButton(
                 renderX,
-                centerY + 76,
+                centerY + 100,
                 bWidth,
                 bHeight,
                 Text.literal("Projectile Trail: " + (ProjectileTrailEnabled ? "§aON" : "§cOFF")),
@@ -438,7 +602,7 @@ public class ClientSettingsScreen extends Screen {
         }
 
         int centerX = this.width / 2;
-        int centerY = this.height / 2;
+        int centerY = (this.height / 2) - 62;
 
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, centerX, 15, 0xFFFFFFFF);
 
@@ -477,5 +641,9 @@ public class ClientSettingsScreen extends Screen {
     @Override
     public boolean shouldCloseOnEsc() {
         return true;
+    }
+
+    private void refreshUI() {
+        this.clearAndInit();
     }
 }

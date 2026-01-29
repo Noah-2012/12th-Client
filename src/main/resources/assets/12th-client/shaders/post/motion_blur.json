@@ -1,7 +1,7 @@
 {
   "targets": [
-    "swap",
-    "previous"
+    { "name": "swap" },
+    { "name": "previous" }
   ],
   "passes": [
     {
@@ -9,25 +9,16 @@
       "intarget": "minecraft:main",
       "outtarget": "swap",
       "auxtargets": [
-        {
-          "name": "PrevSampler",
-          "id": "previous"
-        }
-      ],
-      "uniforms": [
-        {
-          "name": "BlendFactor",
-          "values": [ 0.5 ]
-        }
+        { "name": "PrevSampler", "id": "previous" }
       ]
     },
     {
-      "name": "blit",
+      "name": "minecraft:blit",
       "intarget": "swap",
       "outtarget": "previous"
     },
     {
-      "name": "blit",
+      "name": "minecraft:blit",
       "intarget": "swap",
       "outtarget": "minecraft:main"
     }

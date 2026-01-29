@@ -2,6 +2,7 @@ v1	named	intermediary
 FIELD	com/noadsch12/mixin/ChatAnimationMixin	Lnet/minecraft/client/MinecraftClient;	client	field_2062
 FIELD	com/noadsch12/mixin/ChatAnimationMixin	Ljava/util/List;	visibleMessages	field_2064
 FIELD	com/noadsch12/mixin/EntityRenderManagerMixin	Lnet/minecraft/client/render/BufferBuilderStorage;	bufferBuilders	field_20951
+FIELD	com/noadsch12/mixin/SplashOverlayMixin	Lnet/minecraft/client/MinecraftClient;	client	field_18217
 FIELD	com/noadsch12/mixin/WorldRendererMixin	Lnet/minecraft/client/render/BufferBuilderStorage;	bufferBuilders	field_20951
 METHOD	com/noadsch12/mixin/ChatAnimationMixin	()I	getWidth	method_1811
 METHOD	com/noadsch12/mixin/ChatAnimationMixin	()D	getChatScale	method_1814

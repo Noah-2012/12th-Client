@@ -1,20 +1,11 @@
 {
-    "blend": {
-        "func": "add",
-        "srcrgb": "srcalpha",
-        "dstrgb": "1-srcalpha"
-    },
-    "vertex": "sobel",
-    "fragment": "12th-client:motion_blur",
-    "attributes": [ "Position" ],
-    "samplers": [
-        { "name": "DiffuseSampler" },
-        { "name": "PrevSampler"}
-    ],
-    "uniforms": [
-        { "name": "ProjMat",  "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
-        { "name": "InSize",   "type": "float",	 "count": 2,  "values": [ 1.0, 1.0 ] },
-        { "name": "OutSize",  "type": "float",	 "count": 2,  "values": [ 1.0, 1.0 ] },
-        { "name": "BlendFactor", "type": "float",	 "count": 1,  "values": [ 0.5 ] }
-    ]
+  "vertex": "minecraft:blit_screen",
+  "fragment": "12th-client:motion_blur",
+  "samplers": [
+    { "name": "DiffuseSampler" },
+    { "name": "PrevSampler" }
+  ],
+  "uniforms": [
+    { "name": "Phosphor", "type": "float", "count": 3, "values": [ 0.95, 0.95, 0.95 ] }
+  ]
 }

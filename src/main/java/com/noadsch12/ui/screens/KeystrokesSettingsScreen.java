@@ -75,7 +75,7 @@ public class KeystrokesSettingsScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-        this.renderBackground(context, mouseX, mouseY, deltaTicks);
+        //this.renderBackground(context, mouseX, mouseY, deltaTicks);
 
         // Render HUD Preview
         KeystrokesRenderer.render(context);

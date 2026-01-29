@@ -6,6 +6,7 @@ import com.noadsch12.ui.widgets.AnimatedButtonWidget;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -19,7 +20,7 @@ import net.minecraft.client.MinecraftClient;
 import static com.noadsch12.BasicGlobals.getButtonMiddleX;
 
 @Mixin(TitleScreen.class)
-public abstract class TitleScreenMixin {
+public abstract class TitleScreenMixin extends Screen {
 
     @Unique
     private static final Identifier CLIENT_LOGO = Identifier.of("12th-client", "logo2.png");
@@ -28,6 +29,10 @@ public abstract class TitleScreenMixin {
     private int logoX1, logoY1, logoX2, logoY2;
     @Unique
     private int textX1, textY1, textWidth1, textHeight1;
+
+    protected TitleScreenMixin(Text title) {
+        super(title);
+    }
 
     @Inject(method = "init", at = @At("TAIL"))
     private void addButton(CallbackInfo ci) {

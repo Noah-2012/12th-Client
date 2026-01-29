@@ -1,19 +1,33 @@
 package com.noadsch12;
 
 import com.noadsch12.discord.DiscordRichPresenceManager;
+import com.noadsch12.look.ObjModel;
+import com.noadsch12.networking.ClientStatusPayload;
+import com.noadsch12.networking.ClientUserManager;
+import com.noadsch12.render.ChestESP;
+import com.noadsch12.render.PlayerESP;
 import com.noadsch12.render.entity.EntityCulling;
+import com.noadsch12.render.ui.CompassHud;
+import com.noadsch12.render.ui.ObjWireframeHud;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
+import com.noadsch12.util.AntiAFK;
 import com.noadsch12.util.TwelfthCommand;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 
 public class TwelfthClient implements ClientModInitializer {
@@ -22,6 +36,9 @@ public class TwelfthClient implements ClientModInitializer {
     private static final int UPDATE_INTERVAL = 100; // Alle 5 Sekunden (100 Ticks)
     private static KeyBinding guiKeyBinding;
     public static boolean isMenuAlreadyOpen = false;
+    private static MinecraftClient client = MinecraftClient.getInstance();
+    public static ObjModel myLoadedModel;
+
 
     @Override
     public void onInitializeClient() {
@@ -93,6 +110,38 @@ public class TwelfthClient implements ClientModInitializer {
             ClientSettingsScreen.EntityEspEnabled = (boolean) TwelfthConfig.getValue("entity_esp_enabled", "bool");
         } else TwelfthConfig.create("entity_esp_enabled", "true");
 
+        if (TwelfthConfig.check("storage_esp_enabled")) {
+            ClientSettingsScreen.ChestESPEnabled = (boolean) TwelfthConfig.getValue("storage_esp_enabled", "bool");
+        } else TwelfthConfig.create("storage_esp_enabled", "true");
+
+        if (TwelfthConfig.check("compass_hud_enabled")) {
+            ClientSettingsScreen.CompassHudEnabled = (boolean) TwelfthConfig.getValue("compass_hud_enabled", "bool");
+        } else TwelfthConfig.create("compass_hud_enabled", "true");
+
+        if (TwelfthConfig.check("player_esp_enabled")) {
+            ClientSettingsScreen.PlayerESPEnabled = (boolean) TwelfthConfig.getValue("player_esp_enabled", "bool");
+        } else TwelfthConfig.create("player_esp_enabled", "true");
+
+        if (TwelfthConfig.check("anti_web_enabled")) {
+            ClientSettingsScreen.AntiWebEnabled = (boolean) TwelfthConfig.getValue("anti_web_enabled", "bool");
+        } else TwelfthConfig.create("anti_web_enabled", "true");
+
+        if (TwelfthConfig.check("anti_afk_enabled")) {
+            ClientSettingsScreen.AntiAFKEnabled = (boolean) TwelfthConfig.getValue("anti_afk_enabled", "bool");
+        } else TwelfthConfig.create("anti_afk_enabled", "true");
+
+        if (TwelfthConfig.check("no_slow_enabled")) {
+            ClientSettingsScreen.NoSlowEnabled = (boolean) TwelfthConfig.getValue("no_slow_enabled", "bool");
+        } else TwelfthConfig.create("no_slow_enabled", "true");
+
+        if (TwelfthConfig.check("anti_knockback_enabled")) {
+            ClientSettingsScreen.AntiKnockbackEnabled = (boolean) TwelfthConfig.getValue("anti_knockback_enabled", "bool");
+        } else TwelfthConfig.create("anti_knockback_enabled", "true");
+
+        if (TwelfthConfig.check("criticals_enabled")) {
+            ClientSettingsScreen.CriticalsEnabled = (boolean) TwelfthConfig.getValue("criticals_enabled", "bool");
+        } else TwelfthConfig.create("criticals_enabled", "true");
+
         if (TwelfthConfig.check("trail_index")) {
             ClientSettingsScreen.trailIndex = (int) TwelfthConfig.getValue("trail_index", "int");
         } else TwelfthConfig.create("trail_index", "0");
@@ -104,6 +153,10 @@ public class TwelfthClient implements ClientModInitializer {
         HotbarHelper.register();
         TwelfthCommand.register();
         EntityCulling.register();
+
+        ClientPlayNetworking.registerGlobalReceiver(ClientStatusPayload.ID, (payload, context) -> {
+            context.client().execute(() -> ClientUserManager.USERS.add(payload.playerUuid()));
+        });
 
         KeyBinding.Category clientCategory = KeyBinding.Category.create(Identifier.of("category.noadsch12.client"));
 
@@ -138,6 +191,42 @@ public class TwelfthClient implements ClientModInitializer {
             }
         });
 
+        AntiAFK antiAfk = new AntiAFK();
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            antiAfk.onTick();
+        });
+
+        ChestESP.init();
+
+        HudRenderCallback.EVENT.register((context, tickCounter) -> {
+            CompassHud.render(context);
+            ChestESP.render(context);
+            PlayerESP.render(context);
+            ensureModelLoaded();
+            ObjWireframeHud.render(context, myLoadedModel, 39, 38, 42.6f);
+        });
+
+        /*
+
+        WorldRenderEvents.END_MAIN.register(context -> {
+            ensureModelLoaded();
+            Vec3d camPos = context.gameRenderer().getCamera().getPos();
+            MatrixStack stack = context.matrices();
+
+            // Example: Render at world origin (0, 70, 0)
+            stack.push();
+            stack.translate(0, 70, 0); // Note: standard translate uses x, y, z
+
+            ObjWireframeRenderer.render(myLoadedModel, stack, context.consumers(), camPos, 1.0f, 1.0f, 1.0f);
+
+            stack.pop();
+        });
+
+         */
+
+        CompassHud.addWaypoint("Test", 0.0, 60.0, 0.0);
+
         // Discord RPC initialisieren
         DiscordRichPresenceManager.init();
 
@@ -161,7 +250,21 @@ public class TwelfthClient implements ClientModInitializer {
 
         // Update bei Client-Start
         ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-            DiscordRichPresenceManager.updatePresence("Client gestartet", "Im Hauptmenü");
+            DiscordRichPresenceManager.updatePresence("Client started", "Im Mainmenu");
+        });
+    }
+
+    public static void ensureModelLoaded() {
+        if (myLoadedModel != null) return; // Already loaded
+
+        //Identifier modelId = Identifier.of("12th-client", "models/misc/human_body.obj");
+        Identifier modelId = Identifier.of("12th-client", "models/misc/low_poly_sphere.obj");
+        MinecraftClient.getInstance().getResourceManager().getResource(modelId).ifPresent(resource -> {
+            try (InputStream stream = resource.getInputStream()) {
+                myLoadedModel = new ObjModel(stream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
     }
 }

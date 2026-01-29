@@ -1,16 +1,16 @@
 package com.noadsch12.ui.widgets;
 
-import com.noadsch12.BasicGlobals;
+import com.noadsch12.annotations.NotUpdated;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Style;
 import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 import static com.noadsch12.BasicGlobals.ARIAL_FONT;
 
+@NotUpdated
 public class ModernButton extends ButtonWidget {
     //private static final Identifier ARIAL_FONT = Identifier.of("12th-client", "arial");
     private static final int TEXT_PADDING = 8;
