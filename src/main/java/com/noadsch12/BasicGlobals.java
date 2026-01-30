@@ -8,7 +8,8 @@ public class BasicGlobals {
     public static int MENUBUTTONSIZE = 200; // in Pixels
     public static final String CLIENT_VERSION = "1.1.3";
 
-    public static final Identifier ARIAL_FONT = Identifier.of("12th-client", "arial");
+    public static final Identifier ARIAL_FONT = Identifier.of("12th-client", "consolas");
+    public static final Identifier GOTHIC_FONT = Identifier.of("12th-client", "gothic");
 
     private static MinecraftClient mc;
 
