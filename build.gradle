@@ -16,7 +16,9 @@ repositories {
 }
 
 loom {
-	mixin {
+    //splitEnvironmentSourceSets()
+
+    mixin {
 		defaultRefmapName = "12th-client.refmap.json"
 	}
 	accessWidenerPath = file("src/main/resources/12th-client.accesswidener")

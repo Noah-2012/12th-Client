@@ -7,7 +7,10 @@ ATLAUNCHER = C:\\Users\\noahn\\AppData\\Roaming\\ATLauncher\\ATLauncher.exe
 
 .PHONY: all remove_old move build start
 
-all: build remove_old move start
+all: headers build remove_old move start
+
+headers:
+	python src/main/java/com/noadsch12/add_lpgl_header.py
 
 check:
 	echo $(VERSION)
