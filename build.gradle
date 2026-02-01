@@ -7,8 +7,15 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-	mavenCentral()
-
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+    mavenCentral()
+    maven { url = "https://maven.shedaniel.me" }
 	maven {
 		url 'https://jitpack.io'
 	}
@@ -26,20 +33,29 @@ loom {
 
 
 dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	modImplementation "io.wispforest:owo-lib:${project.owo_version}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    // OWO as a normal mod dependency (not shaded)
+    modImplementation "io.wispforest:owo-lib:${project.owo_version}"
 
-	implementation 'com.google.code.gson:gson:2.10.1'
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	include implementation('com.github.Vatuu:discord-rpc:1.6.2')
-	include "io.wispforest:owo-lib:${project.owo_version}"
-	include "io.wispforest:owo-sentinel:${project.owo_version}"
+    modImplementation "maven.modrinth:notenoughcrashes:4.4.9+1.21.1-fabric"
+
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // You DO want discord-rpc shaded, so keep this:
+    include implementation('com.github.Vatuu:discord-rpc:1.6.2')
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.noadsch12.Launcher'
+        )
+    }
 }
 
 processResources {

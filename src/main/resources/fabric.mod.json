@@ -16,6 +16,9 @@
 	"accessWidener": "12th-client.accesswidener",
 	"environment": "*",
 	"entrypoints": {
+        "preLaunch": [
+            "com.noadsch12.CrashCatcherPreLaunch"
+        ],
 		"main": [
 			"com.noadsch12.TwelfthMain"
 		],
@@ -32,8 +35,9 @@
 		"java": ">=21",
 		"fabric-api": "*",
 		"fabric-command-api-v2": "*",
-		"fabric-rendering-v1": "*"
-	},
+		"fabric-rendering-v1": "*",
+        "owo": "*"
+    },
 	"suggests": {
 		"another-mod": "*"
 	}

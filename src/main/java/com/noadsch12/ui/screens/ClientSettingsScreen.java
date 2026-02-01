@@ -18,6 +18,7 @@
 package com.noadsch12.ui.screens;
 
 import com.noadsch12.BasicGlobals;
+import com.noadsch12.ClientCrashHandler;
 import com.noadsch12.TwelfthConfig;
 import com.noadsch12.ui.BlurHandler;
 import com.noadsch12.ui.widgets.ModernButton;
@@ -577,6 +578,19 @@ public class ClientSettingsScreen extends Screen {
 
         this.shouldCloseOnEsc();
 
+        // === DEV / DEBUG ===
+        this.addDrawableChild(new ModernButton(
+                centerX - 50,
+                centerY + 300,
+                100,
+                20,
+                Text.literal("§cCrash Client"),
+                btn -> {
+                    ClientCrashHandler.handleCrash(null);
+                }
+        ).withTooltip("Intentionally crashes the client\n(for testing the crash handler)"));
+
+
         if (this.client.world == null) {
             this.addDrawableChild(new ModernButton(
                     centerX - 50,
@@ -586,6 +600,10 @@ public class ClientSettingsScreen extends Screen {
                     Text.literal("Back"),
                     btn -> this.close()));
         }
+    }
+
+    private void stacko() {
+        stacko();
     }
 
     @Override

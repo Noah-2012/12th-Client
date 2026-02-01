@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "CobwebCollisionMixin",
+    "CrashReportMixin",
     "EntityRendererMixin",
     "ItemEntityMixin",
     "ItemStackMixin",
@@ -31,6 +32,8 @@
     "GameRendererMixin",
     "InGameHudMixin",
     "KeyboardMixin",
+    "MinecraftClientAccessor",
+    "MinecraftClientCrashMixin",
     "MinecraftClientMixin",
     "NoPushMixin",
     "NoSlowMixin",
