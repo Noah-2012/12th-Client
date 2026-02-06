@@ -63,4 +63,22 @@ public class ObjWireframeRenderer {
         buffer.vertex(matrix, x1, y1, z1).color(r, g, b, 1f).normal(0, 1, 0);
         buffer.vertex(matrix, x2, y2, z2).color(r, g, b, 1f).normal(0, 1, 0);
     }
+
+            /*
+
+        WorldRenderEvents.END_MAIN.register(context -> {
+            ensureModelLoaded();
+            Vec3d camPos = context.gameRenderer().getCamera().getPos();
+            MatrixStack stack = context.matrices();
+
+            // Example: Render at world origin (0, 70, 0)
+            stack.push();
+            stack.translate(0, 70, 0); // Note: standard translate uses x, y, z
+
+            ObjWireframeRenderer.render(myLoadedModel, stack, context.consumers(), camPos, 1.0f, 1.0f, 1.0f);
+
+            stack.pop();
+        });
+
+         */
 }

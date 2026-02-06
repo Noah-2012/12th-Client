@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
@@ -34,7 +35,7 @@ public class VelocityPacketMixin {
         MinecraftClient client = MinecraftClient.getInstance();
 
         // If the velocity packet is for US, cancel it.
-        if (client.player != null && packet.getEntityId() == client.player.getId() && ClientSettingsScreen.AntiKnockbackEnabled) {
+        if (client.player != null && packet.getEntityId() == client.player.getId() && ModuleManager.getInstance().getModule("Anti Knockback").isEnabled()) {
             ci.cancel();
         }
     }

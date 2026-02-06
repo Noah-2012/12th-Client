@@ -20,6 +20,7 @@ package com.noadsch12.mixin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.SplashOverlay;
+import net.minecraft.resource.ResourceReload;
 import com.noadsch12.render.SmallAsciiRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,6 +35,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SplashOverlayMixin {
 
     @Shadow @Final private MinecraftClient client;
+    @Shadow @Final private ResourceReload reload;
 
     @Unique
     private static final String ASCII_RAW = """
@@ -79,15 +81,13 @@ public class SplashOverlayMixin {
     /__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/_
     \\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\\s
     _\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\
-    /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /
-    /__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/_
-    \\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\  /\\\s
-    _\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\/__\\
     """;
 
-    // Convert the block into the array your renderer uses
     @Unique
     private static final String[] MASSIVE_ASCII = ASCII_RAW.split("\n");
+
+    @Unique
+    private static final long CUSTOM_FADE_DURATION = 1320; // 1.32 seconds
 
     /**
      * Changes the background color to Dark Grey.

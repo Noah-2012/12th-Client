@@ -17,6 +17,7 @@
 
 package com.noadsch12.render;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Deprecated
 public class PlayerESP {
 
     private static final Map<UUID, Vec3d> cachedPlayers = new ConcurrentHashMap<>();
@@ -42,7 +44,7 @@ public class PlayerESP {
     }
 
     public static void render(DrawContext context) {
-        if (!ClientSettingsScreen.PlayerESPEnabled) return;
+        if (!ModuleManager.getInstance().getModule("PlayerESP").isEnabled()) return;
         init();
 
         MinecraftClient client = MinecraftClient.getInstance();

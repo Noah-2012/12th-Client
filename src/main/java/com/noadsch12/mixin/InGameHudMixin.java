@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.render.ui.DebugAnimation;
 import com.noadsch12.render.ui.keystrokes.KeystrokesRenderer;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
@@ -38,21 +39,21 @@ public class InGameHudMixin {
 
     @Inject(method = "setOverlayMessage", at = @At("HEAD"), cancellable = true)
     private void cancelTotemOverlay(Text message, boolean tinted, CallbackInfo ci) {
-        if (ClientSettingsScreen.HideTotemAnimEnabled) {
+        if (ModuleManager.getInstance().getModule("Hide Totem Animation").isEnabled()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "renderOverlay", at = @At("HEAD"), cancellable = true)
     private void cancelTotemRender(CallbackInfo ci) {
-        if (ClientSettingsScreen.HideTotemAnimEnabled) {
+        if (ModuleManager.getInstance().getModule("Hide Totem Animation").isEnabled()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     private void onRender(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        if (ClientSettingsScreen.ShowKeystrokeSettingsEnabled) {
+        if (ModuleManager.getInstance().getModule("Show Keystrokes").isEnabled()) {
             KeystrokesRenderer.render(context);
         }
     }

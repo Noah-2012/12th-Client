@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.item.ItemStack;
@@ -30,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class TotemAnimationMixin {
     @Inject(method = "showFloatingItem", at = @At("HEAD"), cancellable = true)
     private void cancelTotemAnimation(ItemStack floatingItem, CallbackInfo ci) {
-        if (ClientSettingsScreen.HideTotemAnimEnabled && floatingItem.isOf(Items.TOTEM_OF_UNDYING)) {
+        if (ModuleManager.getInstance().getModule("Hide Totem Animation").isEnabled() && floatingItem.isOf(Items.TOTEM_OF_UNDYING)) {
             ci.cancel();
         }
     }

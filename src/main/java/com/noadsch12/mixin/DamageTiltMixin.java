@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -29,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class DamageTiltMixin {
     @Inject(method = "tiltViewWhenHurt", at = @At("HEAD"), cancellable = true)
     private void stopDamageTilt(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
-        if (ClientSettingsScreen.NoDamageTiltEnabled) {
+        if (ModuleManager.getInstance().getModule("No Damage Tilt").isEnabled()) {
             ci.cancel();
         }
     }

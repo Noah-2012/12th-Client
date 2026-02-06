@@ -18,15 +18,18 @@
 package com.noadsch12.ui.screens;
 
 import com.noadsch12.BasicGlobals;
-import com.noadsch12.ClientCrashHandler;
-import com.noadsch12.TwelfthConfig;
+import com.noadsch12.modules.Category;
+import com.noadsch12.modules.Module;
+import com.noadsch12.modules.ModuleManager;
+import com.noadsch12.modules.impl.misc.ShowKeystrokesModule;
+import com.noadsch12.modules.impl.render.ProjectileTrailModule;
+import com.noadsch12.modules.impl.render.TrailSettings;
 import com.noadsch12.ui.BlurHandler;
 import com.noadsch12.ui.widgets.ModernButton;
-import com.noadsch12.util.AntiAFK;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Style;
@@ -38,19 +41,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Dot {
-    float x, y, vx, vy;
+    float x, y;
+    float vx, vy;
+    float shakeX = 0;
+    float shakeY = 0;
+
     Dot(int w, int h) {
-        x = (float)Math.random() * w;
-        y = (float)Math.random() * h;
-        vx = ((float)Math.random() - 0.5f) * 0.5f;
-        vy = ((float)Math.random() - 0.5f) * 0.5f;
+        x = (float) Math.random() * w;
+        y = (float) Math.random() * h;
+        vx = ((float) Math.random() - 0.5f) * 0.5f;
+        vy = ((float) Math.random() - 0.5f) * 0.5f;
     }
+
+    void applyShake() {
+        shakeX += ((float) Math.random() - 0.5f) * 6.5f;
+        shakeY += ((float) Math.random() - 0.5f) * 6.5f;
+    }
+
     void update(int w, int h, double mouseX, double mouseY) {
-        x += vx; y += vy;
+        x += vx + shakeX;
+        y += vy + shakeY;
+
+        shakeX *= 0.85f;
+        shakeY *= 0.85f;
 
         double dx = x - mouseX;
         double dy = y - mouseY;
-        double dist = Math.sqrt(dx*dx + dy*dy);
+        double dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < 40) {
             x += (float) (dx * 0.05);
@@ -66,69 +83,14 @@ public class ClientSettingsScreen extends Screen {
     private final Screen parent;
     private final Text title;
     private final Style font = Style.EMPTY.withFont(new StyleSpriteSource.Font(BasicGlobals.ARIAL_FONT));
-    public static boolean ProjectileDingEnabled = true;
-    public static boolean jumpToFoodEnabled = true;
-    public static boolean EntityCullingEnabled = true;
-    public static boolean ProjectileTrailEnabled = true;
-    public static boolean AutoTotemEnabled = true;
-    public static boolean AutoArmorEnabled = true;
-    public static boolean AutoRefillEnabled = true;
-    public static boolean AutoToolEnabled = true;
-    public static boolean BetterChatEnabled = true;
-    public static boolean ItemDisplayEnabled = true;
-    public static boolean BetterScoreboardEnabled = true;
-    public static boolean HideTotemAnimEnabled = true;
-    public static boolean SeeThroughGuiEnabled = true;
-    public static boolean HideExplosionParticlesEnabled = true;
-    public static boolean ShowKeystrokeSettingsEnabled = true;
-    public static boolean NoDamageTiltEnabled = true;
-    public static boolean AimbotEnabled = true;
-    public static boolean EntityEspEnabled = true;
-    public static boolean ChestESPEnabled = true;
-    public static boolean CompassHudEnabled = true;
-    public static boolean PlayerESPEnabled = true;
-    public static boolean AntiWebEnabled = true;
-    public static boolean AntiAFKEnabled = true;
-    public static boolean NoSlowEnabled = true;
-    public static boolean AntiKnockbackEnabled = true;
-    public static boolean CriticalsEnabled = true;
-
-    private static final String[] TRAIL_NAMES = {"Totem", "Explosion", "Hearts", "Line Trail"};
-    private static final String[] TRAIL_COLORS = {"§cRed§r", "§9Blue§r", "§aGreen§r", "§fWhite§r", "§0Black§r"};
-    public static int trailIndex = 0;
-    public static int trailColorIndex = 0;
-
     private final List<Dot> dots = new ArrayList<>();
+    private final ModuleManager moduleManager = ModuleManager.getInstance();
 
-    public static void registerVars() {
-        ProjectileDingEnabled = true;
-        jumpToFoodEnabled = true;
-        EntityCullingEnabled = true;
-        ProjectileTrailEnabled = true;
-        AutoTotemEnabled = true;
-        AutoArmorEnabled = true;
-        AutoRefillEnabled = true;
-        AutoToolEnabled = true;
-        BetterChatEnabled = true;
-        ItemDisplayEnabled = true;
-        BetterScoreboardEnabled = true;
-        HideTotemAnimEnabled = true;
-        SeeThroughGuiEnabled = true;
-        ShowKeystrokeSettingsEnabled = true;
-        NoDamageTiltEnabled = true;
-        AimbotEnabled = true;
-        EntityEspEnabled = true;
-        ChestESPEnabled = true;
-        CompassHudEnabled = true;
-        PlayerESPEnabled = true;
-        AntiWebEnabled = true;
-        NoSlowEnabled = true;
-        AntiKnockbackEnabled = true;
-        CriticalsEnabled = true;
-
-        trailIndex = 0;
-        trailColorIndex = 0;
-    }
+    // UI Constants
+    private static final int BUTTON_WIDTH = 150;
+    private static final int BUTTON_HEIGHT = 20;
+    private static final int TRAIL_BUTTON_HEIGHT = 10;
+    private static final int BUTTON_SPACING = 24;
 
     public ClientSettingsScreen(Screen parent) {
         super(Text.literal(""));
@@ -138,472 +100,203 @@ public class ClientSettingsScreen extends Screen {
 
     @Override
     protected void init() {
-        if(dots.isEmpty()) {
-            for(int i = 0; i < 90; i++) dots.add(new Dot(this.width, this.height));
+        if (dots.isEmpty()) {
+            for (int i = 0; i < 90; i++) {
+                dots.add(new Dot(this.width, this.height));
+            }
         }
 
         super.init();
 
         int centerX = this.width / 2;
         int centerY = (this.height / 2) - 50;
-        int bWidth = 150;
-        int bHeight = 20;
 
-        int btcWidth = 150;
-        int btcHeight = 10;
-
-        int utilsX = centerX - 250;
-
-        // Utils Bulk Buttons
-        this.addDrawableChild(new ModernButton(utilsX, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§aEnable All"), btn -> {
-            jumpToFoodEnabled = EntityCullingEnabled = BetterChatEnabled = ItemDisplayEnabled =
-                    BetterScoreboardEnabled = ShowKeystrokeSettingsEnabled = AntiAFKEnabled = true;
-            // Save all to config here if needed
-            refreshUI();
-        }));
-        this.addDrawableChild(new ModernButton(utilsX + bWidth / 2 + 2, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§cDisable All"), btn -> {
-            jumpToFoodEnabled = EntityCullingEnabled = BetterChatEnabled = ItemDisplayEnabled =
-                    BetterScoreboardEnabled = ShowKeystrokeSettingsEnabled = AntiAFKEnabled = false;
-            refreshUI();
-        }));
-
-        this.addDrawableChild(new ModernButton(
-                utilsX,
-                centerY - 20,
-                bWidth,
-                bHeight,
-                Text.literal("Jump to Food: " + (jumpToFoodEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    jumpToFoodEnabled = !jumpToFoodEnabled;
-                    TwelfthConfig.setValue("jump_to_food_enabled", String.valueOf(jumpToFoodEnabled));
-                    btn.setMessage(Text.literal("Jump to Food: " + (jumpToFoodEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Automatically jumps to next food item in hotbar"));
-
-        this.addDrawableChild(new ModernButton(
-                utilsX,
-                centerY + 4,
-                bWidth,
-                bHeight,
-                Text.literal("Entity Culling: " + (EntityCullingEnabled ? "§aOn by Default" : "§cOnly by Command")),
-                btn -> {
-                    EntityCullingEnabled = !EntityCullingEnabled;
-                    TwelfthConfig.setValue("entity_culling_enabled", String.valueOf(EntityCullingEnabled));
-                    btn.setMessage(Text.literal("Entity Culling: " + (EntityCullingEnabled ? "§aOn by Default" : "§cOnly by Command")));
-                }).withTooltip("Ensures entities which cannot be seen aren't rendered"));
-
-        this.addDrawableChild(new ModernButton(
-                utilsX,
-                centerY + 28,
-                bWidth,
-                bHeight,
-                Text.literal("Better Chat: " + (BetterChatEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    BetterChatEnabled = !BetterChatEnabled;
-                    TwelfthConfig.setValue("better_chat_enabled", String.valueOf(BetterChatEnabled));
-                    btn.setMessage(Text.literal("Better Chat: " + (BetterChatEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Improves the Chat in many ways"));
-
-        this.addDrawableChild(new ModernButton(
-                utilsX,
-                centerY + 52,
-                bWidth,
-                bHeight,
-                Text.literal("Item Display: " + (ItemDisplayEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    ItemDisplayEnabled = !ItemDisplayEnabled;
-                    TwelfthConfig.setValue("item_display_enabled", String.valueOf(ItemDisplayEnabled));
-                    btn.setMessage(Text.literal("Item Display: " + (ItemDisplayEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Shows which and how many items are at one point"));
-
-        this.addDrawableChild(new ModernButton(
-                utilsX,
-                centerY + 76,
-                bWidth,
-                bHeight,
-                Text.literal("Better Scoreboard: " + (BetterScoreboardEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    BetterScoreboardEnabled = !BetterScoreboardEnabled;
-                    TwelfthConfig.setValue("better_scoreboard_enabled", String.valueOf(BetterScoreboardEnabled));
-                    btn.setMessage(Text.literal("Better Scoreboard: " + (BetterScoreboardEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Improves the Scoreboard with Design and Ordering"));
-
-        ModernButton outline_settings = new ModernButton(
-                utilsX,
-                centerY + 148,
-                bWidth,
-                bHeight,
-                Text.literal("Open Block Outline Settings"),
-                btn -> {
-                    this.client.setScreen(new BlockOutlineScreen(this));
-                    btn.setMessage(Text.literal("Open Block Outline Settings"));
-                });
-
-        ModernButton keystroke_settings = new ModernButton(
-                utilsX,
-                centerY + 124,
-                bWidth,
-                bHeight,
-                Text.literal("Open Keystroke Settings"),
-                btn -> {
-                    this.client.setScreen(new KeystrokesSettingsScreen(this));
-                    btn.setMessage(Text.literal("Open Keystroke Settings"));
-                });
-
-        this.addDrawableChild(new ModernButton(
-                utilsX,
-                centerY + 100,
-                bWidth,
-                bHeight,
-                Text.literal("Show Keystrokes: " + (ShowKeystrokeSettingsEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    ShowKeystrokeSettingsEnabled = !ShowKeystrokeSettingsEnabled;
-                    this.remove(keystroke_settings);
-                    keystroke_settings.active = ShowKeystrokeSettingsEnabled;
-                    this.addDrawableChild(keystroke_settings);
-                    TwelfthConfig.setValue("show_keystrokes_enabled", String.valueOf(ShowKeystrokeSettingsEnabled));
-                    btn.setMessage(Text.literal("Show Keystrokes: " + (ShowKeystrokeSettingsEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Shows Keystrokes with Options like CPS, WASD and Mouse buttons"));
-
-        this.addDrawableChild(keystroke_settings);
-
-        this.addDrawableChild(outline_settings);
-
-        this.addDrawableChild(new ModernButton(
-                utilsX,
-                centerY + 172,
-                bWidth,
-                bHeight,
-                Text.literal("Anti AFK: " + (AntiAFKEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    AntiAFKEnabled = !AntiAFKEnabled;
-                    AntiAFK.enabled = AntiAFKEnabled;
-                    TwelfthConfig.setValue("anti_afk_enabled", String.valueOf(AntiAFKEnabled));
-                    btn.setMessage(Text.literal("Anti AFK: " + (AntiAFKEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Lets the Player jump every five Seconds"));
-
-        int cheatsX = centerX + 100;
-
-        // Cheats Bulk Buttons
-        this.addDrawableChild(new ModernButton(cheatsX, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§aEnable All"), btn -> {
-            AutoTotemEnabled = AutoArmorEnabled = AutoRefillEnabled = AutoToolEnabled =
-                    NoDamageTiltEnabled = AimbotEnabled = ChestESPEnabled = PlayerESPEnabled =
-                            AntiWebEnabled = NoSlowEnabled = AntiKnockbackEnabled = true;
-            refreshUI();
-        }));
-        this.addDrawableChild(new ModernButton(cheatsX + bWidth / 2 + 2, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§cDisable All"), btn -> {
-            AutoTotemEnabled = AutoArmorEnabled = AutoRefillEnabled = AutoToolEnabled =
-                    NoDamageTiltEnabled = AimbotEnabled = ChestESPEnabled = PlayerESPEnabled =
-                            AntiWebEnabled = NoSlowEnabled = AntiKnockbackEnabled = false;
-            refreshUI();
-        }));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY - 20,
-                bWidth,
-                bHeight,
-                Text.literal("Auto Totem: " + (AutoTotemEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    AutoTotemEnabled = !AutoTotemEnabled;
-                    TwelfthConfig.setValue("auto_totem_enabled", String.valueOf(AutoTotemEnabled));
-                    btn.setMessage(Text.literal("Auto Totem: " + (AutoTotemEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Automatically places the totem in the slot"));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY + 4,
-                bWidth,
-                bHeight,
-                Text.literal("Auto Armor: " + (AutoArmorEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    AutoArmorEnabled = !AutoArmorEnabled;
-                    TwelfthConfig.setValue("auto_armor_enabled", String.valueOf(AutoArmorEnabled));
-                    btn.setMessage(Text.literal("Auto Armor: " + (AutoArmorEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Automatically places the armor in the right slots"));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY + 28,
-                bWidth,
-                bHeight,
-                Text.literal("Auto Refill: " + (AutoRefillEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    AutoRefillEnabled = !AutoRefillEnabled;
-                    TwelfthConfig.setValue("auto_refill_enabled", String.valueOf(AutoRefillEnabled));
-                    btn.setMessage(Text.literal("Auto Refill: " + (AutoRefillEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Automatically refills an item in the hotbar"));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY + 52,
-                bWidth,
-                bHeight,
-                Text.literal("Auto Tool: " + (AutoToolEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    AutoToolEnabled = !AutoToolEnabled;
-                    TwelfthConfig.setValue("auto_tool_enabled", String.valueOf(AutoToolEnabled));
-                    btn.setMessage(Text.literal("Auto Tool: " + (AutoToolEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Automatically jumps to the most efficient\ntool when performing an action"));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY + 76,
-                bWidth,
-                bHeight,
-                Text.literal("No Damage Tilt: " + (NoDamageTiltEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    NoDamageTiltEnabled = !NoDamageTiltEnabled;
-                    TwelfthConfig.setValue("no_tilt_enabled", String.valueOf(NoDamageTiltEnabled));
-                    btn.setMessage(Text.literal("No Damage Tilt: " + (NoDamageTiltEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Disables the Camera Tilt when getting damaged"));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY + 100,
-                bWidth,
-                bHeight,
-                Text.literal("Aimbot: " + (AimbotEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    AimbotEnabled= !AimbotEnabled;
-                    TwelfthConfig.setValue("aimbot_enabled", String.valueOf(AimbotEnabled));
-                    btn.setMessage(Text.literal("Aimbot: " + (AimbotEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Always moves the crosshair to the nearest Player"));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY + 124,
-                bWidth,
-                bHeight,
-                Text.literal("Storage ESP: " + (ChestESPEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    ChestESPEnabled= !ChestESPEnabled;
-                    TwelfthConfig.setValue("storage_esp_enabled", String.valueOf(ChestESPEnabled));
-                    btn.setMessage(Text.literal("Storage ESP: " + (ChestESPEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Marks every Chest in ESP Radius and uses the CBCS\n(Chunk Block Cache System)"));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY + 148,
-                bWidth,
-                bHeight,
-                Text.literal("Player ESP: " + (PlayerESPEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    PlayerESPEnabled = !PlayerESPEnabled;
-                    TwelfthConfig.setValue("player_esp_enabled", String.valueOf(PlayerESPEnabled));
-                    btn.setMessage(Text.literal("Player ESP: " + (PlayerESPEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Marks every Player in ESP Radius and uses the PUCS\n(Player UUID Cache System)"));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY + 172,
-                bWidth,
-                bHeight,
-                Text.literal("Anti Web: " + (AntiWebEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    AntiWebEnabled = !AntiWebEnabled;
-                    TwelfthConfig.setValue("anti_web_enabled", String.valueOf(AntiWebEnabled));
-                    btn.setMessage(Text.literal("Anti Web: " + (AntiWebEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Removes the slow down when walking into a Web"));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY + 196,
-                bWidth,
-                bHeight,
-                Text.literal("No Slow: " + (NoSlowEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    NoSlowEnabled = !NoSlowEnabled;
-                    TwelfthConfig.setValue("no_slow_enabled", String.valueOf(NoSlowEnabled));
-                    btn.setMessage(Text.literal("No Slow: " + (NoSlowEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Removes the slow down when using item like food\nor drawing a bow"));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY + 220,
-                bWidth,
-                bHeight,
-                Text.literal("Anti Knockback: " + (AntiKnockbackEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    AntiKnockbackEnabled = !AntiKnockbackEnabled;
-                    TwelfthConfig.setValue("anti_knockback_enabled", String.valueOf(AntiKnockbackEnabled));
-                    btn.setMessage(Text.literal("Anti Knockback: " + (AntiKnockbackEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Removes the knockback by canceling the packet"));
-
-        this.addDrawableChild(new ModernButton(
-                cheatsX,
-                centerY + 244,
-                bWidth,
-                bHeight,
-                Text.literal("Criticals: " + (CriticalsEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    CriticalsEnabled = !CriticalsEnabled;
-                    TwelfthConfig.setValue("criticals_enabled", String.valueOf(CriticalsEnabled));
-                    btn.setMessage(Text.literal("Criticals: " + (CriticalsEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Manipulates the Server packet so you do Criticals everytime"));
-
-        int renderX = centerX - (bWidth / 2);
-
-        // Rendering Bulk Buttons
-        this.addDrawableChild(new ModernButton(renderX, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§aEnable All"), btn -> {
-            HideTotemAnimEnabled = HideExplosionParticlesEnabled = EntityEspEnabled =
-                    CompassHudEnabled = ProjectileDingEnabled = ProjectileTrailEnabled = true;
-            refreshUI();
-        }));
-        this.addDrawableChild(new ModernButton(renderX + bWidth / 2 + 2, centerY - 38, bWidth / 2 - 2, 14, Text.literal("§cDisable All"), btn -> {
-            HideTotemAnimEnabled = HideExplosionParticlesEnabled = EntityEspEnabled =
-                    CompassHudEnabled = ProjectileDingEnabled = ProjectileTrailEnabled = false;
-            refreshUI();
-        }));
-
-        this.addDrawableChild(new ModernButton(
-                renderX,
-                centerY - 20,
-                bWidth,
-                bHeight,
-                Text.literal("Hide Totem Animation: " + (HideTotemAnimEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    HideTotemAnimEnabled = !HideTotemAnimEnabled;
-                    TwelfthConfig.setValue("hide_totem_enabled", String.valueOf(HideTotemAnimEnabled));
-                    btn.setMessage(Text.literal("Hide Totem Animation: " + (HideTotemAnimEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Hides the Totem popping Animation so it does\nnot distract the Player"));
-
-        this.addDrawableChild(new ModernButton(
-                renderX,
-                centerY + 4,
-                bWidth,
-                bHeight,
-                Text.literal("Hide Explosion Particles: " + (HideExplosionParticlesEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    HideExplosionParticlesEnabled = !HideExplosionParticlesEnabled;
-                    TwelfthConfig.setValue("hide_explosion_enabled", String.valueOf(HideExplosionParticlesEnabled));
-                    btn.setMessage(Text.literal("Hide Explosion Particles: " + (HideExplosionParticlesEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Hides the Explosion Particles so it does\nnot distract the Player"));
-
-        this.addDrawableChild(new ModernButton(
-                renderX,
-                centerY + 28,
-                bWidth,
-                bHeight,
-                Text.literal("Entity ESP: " + (EntityEspEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    EntityEspEnabled = !EntityEspEnabled;
-                    TwelfthConfig.setValue("entity_esp_enabled", String.valueOf(EntityEspEnabled));
-                    btn.setMessage(Text.literal("Entity ESP: " + (EntityEspEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Makes Lines around Hitboxes from Entities\n(Green: peacefully, Yellow: not peacefully, Red: Player)"));
-
-        this.addDrawableChild(new ModernButton(
-                renderX,
-                centerY + 52,
-                bWidth,
-                bHeight,
-                Text.literal("Compass HUD: " + (CompassHudEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    CompassHudEnabled = !CompassHudEnabled;
-                    TwelfthConfig.setValue("compass_hud_enabled", String.valueOf(CompassHudEnabled));
-                    btn.setMessage(Text.literal("Compass HUD: " + (CompassHudEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Makes a Compass in the top middle Screen that shows the Directions and Waypoints"));
-
-        ModernButton trailColorButton = new ModernButton(
-                renderX,
-                centerY + 144,
-                btcWidth,
-                btcHeight,
-                Text.literal("Trail Color: " + TRAIL_COLORS[trailColorIndex]),
-                btn -> {
-                    trailColorIndex = (trailColorIndex + 1) % TRAIL_COLORS.length;
-                    TwelfthConfig.setValue("trail_color_index", String.valueOf(trailColorIndex));
-                    btn.setMessage(Text.literal("Trail Color: " + TRAIL_COLORS[trailColorIndex]));
-                }).withTooltip("Select a color for the trail");
-
-        if (trailIndex != 3) {
-            trailColorButton.active = false;
+        // Create buttons for each category
+        for (Category category : Category.values()) {
+            createCategoryButtons(category, centerX, centerY);
         }
-        this.addDrawableChild(trailColorButton);
 
-        ModernButton trailButton = new ModernButton(
-                renderX,
-                centerY + 124,
-                bWidth,
-                bHeight,
-                Text.literal("Trail Mode: " + TRAIL_NAMES[trailIndex]),
-                btn -> {
-                    this.remove(trailColorButton);
-                    trailIndex = (trailIndex + 1) % TRAIL_NAMES.length;
-                    if (trailIndex == 3) {
-                        trailColorButton.active = true;
-                    } else {
-                        trailColorButton.active = false;
-                    }
-                    TwelfthConfig.setValue("trail_index", String.valueOf(trailIndex));
-                    this.addDrawableChild(trailColorButton);
-                    btn.setMessage(Text.literal("Trail Mode: " + TRAIL_NAMES[trailIndex]));
-                }).withTooltip("Select a trail mode");
-
-        this.addDrawableChild(new ModernButton(
-                renderX,
-                centerY + 76,
-                bWidth,
-                bHeight,
-                Text.literal("Projectile Ding: " + (ProjectileDingEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    ProjectileDingEnabled = !ProjectileDingEnabled;
-                    TwelfthConfig.setValue("projectile_ding_enabled", String.valueOf(ProjectileDingEnabled));
-                    btn.setMessage(Text.literal("Projectile Ding: " + (ProjectileDingEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Makes a ding when hitting an entity\n(high when not killed; low when killed)"));
-
-        this.addDrawableChild(new ModernButton(
-                renderX,
-                centerY + 100,
-                bWidth,
-                bHeight,
-                Text.literal("Projectile Trail: " + (ProjectileTrailEnabled ? "§aON" : "§cOFF")),
-                btn -> {
-                    ProjectileTrailEnabled = !ProjectileTrailEnabled;
-                    this.remove(trailButton);
-                    trailButton.active = ProjectileTrailEnabled;
-                    this.addDrawableChild(trailButton);
-                    if (trailIndex == 3) {
-                        this.remove(trailColorButton);
-                        trailColorButton.active = ProjectileTrailEnabled;
-                        this.addDrawableChild(trailColorButton);
-                    }
-                    TwelfthConfig.setValue("projectile_trail_enabled", String.valueOf(ProjectileTrailEnabled));
-                    btn.setMessage(Text.literal("Projectile Trail: " + (ProjectileTrailEnabled ? "§aON" : "§cOFF")));
-                }).withTooltip("Makes a trail behind arrows"));
-
-        if (!ProjectileTrailEnabled) {
-            trailButton.active = false;
-        }
-        this.addDrawableChild(trailButton);
+        // Special buttons (settings screens, crash test, back)
+        createSpecialButtons(centerX, centerY);
 
         this.shouldCloseOnEsc();
+    }
 
-        // === DEV / DEBUG ===
+    /**
+     * Create all buttons for a specific category
+     */
+    private void createCategoryButtons(Category category, int centerX, int centerY) {
+        int columnX = category.getColumnX(centerX, BUTTON_WIDTH);
+        int currentY = centerY - 20;
+
+        // Bulk enable/disable buttons
+        addBulkButtons(category, columnX, centerY - 38);
+
+        // Get all modules for this category
+        List<Module> modules = moduleManager.getModulesByCategory(category);
+
+        for (Module module : modules) {
+            ModernButton button = new ModernButton(
+                    columnX,
+                    currentY,
+                    BUTTON_WIDTH,
+                    BUTTON_HEIGHT,
+                    module.getButtonLabel(),
+                    btn -> {
+                        module.toggle();
+                        btn.setMessage(module.getButtonLabel());
+
+                        // Handle special module logic
+                        handleSpecialModuleToggle(module);
+                    }
+            ).withTooltip(module.getTooltip());
+
+            this.addDrawableChild(button);
+            currentY += BUTTON_SPACING;
+        }
+
+        // Add category-specific special buttons
+        if (category == Category.MISC) {
+            addMiscSpecialButtons(columnX, currentY);
+        } else if (category == Category.RENDER) {
+            addRenderSpecialButtons(columnX, currentY);
+        }
+    }
+
+    /**
+     * Add bulk enable/disable buttons for a category
+     */
+    private void addBulkButtons(Category category, int x, int y) {
+        this.addDrawableChild(new ModernButton(
+                x,
+                y,
+                BUTTON_WIDTH / 2 - 2,
+                14,
+                Text.literal("§aEnable All"),
+                btn -> {
+                    moduleManager.enableCategory(category);
+                    refreshUI();
+                }
+        ));
+
+        this.addDrawableChild(new ModernButton(
+                x + BUTTON_WIDTH / 2 + 2,
+                y,
+                BUTTON_WIDTH / 2 - 2,
+                14,
+                Text.literal("§cDisable All"),
+                btn -> {
+                    moduleManager.disableCategory(category);
+                    refreshUI();
+                }
+        ));
+    }
+
+    /**
+     * Add special buttons for Misc category
+     */
+    private void addMiscSpecialButtons(int x, int y) {
+        ShowKeystrokesModule keystrokesModule = moduleManager.getModule(ShowKeystrokesModule.class);
+
+        ModernButton keystrokeSettings = new ModernButton(
+                x,
+                y,
+                BUTTON_WIDTH,
+                BUTTON_HEIGHT,
+                Text.literal("Open Keystroke Settings"),
+                btn -> this.client.setScreen(new KeystrokesSettingsScreen(this))
+        );
+        keystrokeSettings.active = keystrokesModule != null && keystrokesModule.isEnabled();
+        this.addDrawableChild(keystrokeSettings);
+
+        this.addDrawableChild(new ModernButton(
+                x,
+                y + BUTTON_SPACING,
+                BUTTON_WIDTH,
+                BUTTON_HEIGHT,
+                Text.literal("Open Block Outline Settings"),
+                btn -> this.client.setScreen(new BlockOutlineScreen(this))
+        ));
+    }
+
+    /**
+     * Add special buttons for Render category (trail settings)
+     */
+    private void addRenderSpecialButtons(int x, int y) {
+        ProjectileTrailModule trailModule = moduleManager.getModule(ProjectileTrailModule.class);
+        boolean trailEnabled = trailModule != null && trailModule.isEnabled();
+
+        // Trail color button
+        ModernButton trailColorButton = new ModernButton(
+                x,
+                y + 20,
+                BUTTON_WIDTH,
+                TRAIL_BUTTON_HEIGHT,
+                Text.literal("Trail Color: " + TrailSettings.getCurrentTrailColor()),
+                btn -> {
+                    TrailSettings.cycleTrailColorIndex();
+                    btn.setMessage(Text.literal("Trail Color: " + TrailSettings.getCurrentTrailColor()));
+                }
+        ).withTooltip("Select a color for the trail");
+        trailColorButton.active = trailEnabled && TrailSettings.isLineTrail();
+        this.addDrawableChild(trailColorButton);
+
+        // Trail mode button
+        ModernButton trailButton = new ModernButton(
+                x,
+                y,
+                BUTTON_WIDTH,
+                BUTTON_HEIGHT,
+                Text.literal("Trail Mode: " + TrailSettings.getCurrentTrailName()),
+                btn -> {
+                    this.remove(trailColorButton);
+                    TrailSettings.cycleTrailIndex();
+                    trailColorButton.active = trailEnabled && TrailSettings.isLineTrail();
+                    this.addDrawableChild(trailColorButton);
+                    btn.setMessage(Text.literal("Trail Mode: " + TrailSettings.getCurrentTrailName()));
+                }
+        ).withTooltip("Select a trail mode");
+        trailButton.active = trailEnabled;
+        this.addDrawableChild(trailButton);
+    }
+
+    /**
+     * Add special buttons (crash test, back button)
+     */
+    private void createSpecialButtons(int centerX, int centerY) {
+        // Developer crash test button
         this.addDrawableChild(new ModernButton(
                 centerX - 50,
-                centerY + 300,
+                centerY + 297,
                 100,
                 20,
                 Text.literal("§cCrash Client"),
                 btn -> {
-                    ClientCrashHandler.handleCrash(null);
+                    throw new RuntimeException("12th Client managed Crash - THIS IS NOT A REAL CRASH - ");
                 }
         ).withTooltip("Intentionally crashes the client\n(for testing the crash handler)"));
 
-
+        // Back button (only show when not in-game)
         if (this.client.world == null) {
             this.addDrawableChild(new ModernButton(
                     centerX - 50,
-                    centerY + 275,
+                    centerY + 273,
                     100,
                     20,
                     Text.literal("Back"),
-                    btn -> this.close()));
+                    btn -> this.close()
+            ));
         }
     }
 
-    private void stacko() {
-        stacko();
+    /**
+     * Handle special logic when specific modules are toggled
+     */
+    private void handleSpecialModuleToggle(Module module) {
+        // Refresh UI for modules that affect other buttons
+        if (module instanceof ShowKeystrokesModule || module instanceof ProjectileTrailModule) {
+            refreshUI();
+        }
     }
 
     @Override
@@ -612,48 +305,91 @@ public class ClientSettingsScreen extends Screen {
             BlurHandler.executeBlur(context, this.width, this.height, 2.0f);
             super.render(context, mouseX, mouseY, deltaTicks);
         } else {
-            context.fill(0, 0, this.width, this.height, 0xFF101010);
-
-            for (Dot dot : dots) {
-                dot.update(this.width, this.height, mouseX, mouseY);
-                context.fill((int)dot.x, (int)dot.y, (int)dot.x + 2, (int)dot.y + 2, 0x55FFFFFF);
-            }
-
-            for (int i = 0; i < dots.size(); i++) {
-                Dot a = dots.get(i);
-                for (int j = i + 1; j < dots.size(); j++) {
-                    Dot b = dots.get(j);
-                    double dist = Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
-
-                    if (dist < 25) {
-                        int alpha = (int) ((1.0 - (dist / 50.0)) * 100);
-                        int color = (alpha << 24) | 0xFFFFFF;
-                        context.fill((int)a.x, (int)a.y, (int)b.x, (int)b.y + 1, color);
-                    }
-                }
-            }
-
+            renderBackgroundAnimation(context, mouseX, mouseY);
             super.render(context, mouseX, mouseY, deltaTicks);
         }
 
+        renderTitleAndCategoryHeaders(context);
+        renderTrailPreview(context);
+        renderTooltips(context, mouseX, mouseY);
+    }
+
+    /**
+     * Render animated dot background (when not in-game)
+     */
+    private void renderBackgroundAnimation(DrawContext context, int mouseX, int mouseY) {
+        context.fill(0, 0, this.width, this.height, 0xFF101010);
+
+        // Update and render dots
+        for (Dot dot : dots) {
+            dot.update(this.width, this.height, mouseX, mouseY);
+            context.fill((int) dot.x, (int) dot.y, (int) dot.x + 2, (int) dot.y + 2, 0x55FFFFFF);
+        }
+
+        // Render connections between nearby dots
+        for (int i = 0; i < dots.size(); i++) {
+            Dot a = dots.get(i);
+            for (int j = i + 1; j < dots.size(); j++) {
+                Dot b = dots.get(j);
+                double dist = Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+
+                if (dist < 25) {
+                    int alpha = (int) ((1.0 - (dist / 50.0)) * 100);
+                    int color = (alpha << 24) | 0xFFFFFF;
+                    context.fill((int) a.x, (int) a.y, (int) b.x, (int) b.y + 1, color);
+                }
+            }
+        }
+    }
+
+    /**
+     * Render title and category headers with icons
+     */
+    private void renderTitleAndCategoryHeaders(DrawContext context) {
         int centerX = this.width / 2;
         int centerY = (this.height / 2) - 62;
 
+        // Main title
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, centerX, 15, 0xFFFFFFFF);
 
-        context.drawTextWithShadow(this.textRenderer, Text.literal("Utils").setStyle(font), centerX - 180, centerY - 40, 0xFFFFAA00);
-        context.drawItem(new ItemStack(Items.COMPASS), centerX - 205, centerY - 45);
+        // Category headers
+        for (Category category : Category.values()) {
+            int columnX = category.getColumnX(centerX, BUTTON_WIDTH);
+            int headerY = centerY - 40;
 
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("Rendering & Accessories").setStyle(font), centerX, centerY - 40, 0xFFFFAA00);
-        context.drawItem(new ItemStack(Items.SPYGLASS), centerX - 6, centerY - 62);
+            // Category text
+            if (category == Category.RENDER) {
+                context.drawCenteredTextWithShadow(
+                        this.textRenderer,
+                        Text.literal(category.getDisplayName()).setStyle(font),
+                        centerX - 10,
+                        headerY,
+                        category.getColor()
+                );
+                context.drawItem(new ItemStack(category.getIconItem()), centerX - 6, centerY - 62);
+            } else {
+                context.drawTextWithShadow(
+                        this.textRenderer,
+                        Text.literal(category.getDisplayName()).setStyle(font),
+                        columnX + 64,
+                        headerY,
+                        category.getColor()
+                );
+                context.drawItem(new ItemStack(category.getIconItem()), columnX + 39, centerY - 45);
+            }
+        }
+    }
 
-        context.drawTextWithShadow(this.textRenderer, Text.literal("Cheats").setStyle(font), centerX + 158, centerY - 40, 0xFFFFAA00);
-        context.drawItem(new ItemStack(Items.BARRIER), centerX + 193, centerY - 45);
-
+    /**
+     * Render trail preview icon
+     */
+    private void renderTrailPreview(DrawContext context) {
+        int centerX = this.width / 2;
+        int centerY = (this.height / 2) - 62;
         int previewX = centerX + 83;
         int previewY = centerY + 78;
 
-        ItemStack previewStack = switch (trailIndex) {
+        ItemStack previewStack = switch (TrailSettings.getTrailIndex()) {
             case 0 -> new ItemStack(Items.TOTEM_OF_UNDYING);
             case 1 -> new ItemStack(Items.TNT);
             case 3 -> new ItemStack(Items.STICK);
@@ -662,8 +398,27 @@ public class ClientSettingsScreen extends Screen {
 
         if (!previewStack.isEmpty()) {
             context.drawItem(previewStack, previewX, previewY);
-        } else if (trailIndex == 2) {
-            context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, Identifier.ofVanilla("hud/heart/full"), previewX, previewY + 2, 11, 11, 0xFFFFFFFF);
+        } else if (TrailSettings.getTrailIndex() == 2) {
+            context.drawGuiTexture(
+                    RenderPipelines.GUI_TEXTURED,
+                    Identifier.ofVanilla("hud/heart/full"),
+                    previewX,
+                    previewY + 2,
+                    11,
+                    11,
+                    0xFFFFFFFF
+            );
+        }
+    }
+
+    /**
+     * Render custom tooltips for buttons
+     */
+    private void renderTooltips(DrawContext context, int mouseX, int mouseY) {
+        for (Element element : this.children()) {
+            if (element instanceof ModernButton button && button.shouldRenderTooltip(mouseX, mouseY)) {
+                button.renderCustomTooltip(context, mouseX, mouseY, button.getTooltipAlpha());
+            }
         }
     }
 
@@ -680,5 +435,24 @@ public class ClientSettingsScreen extends Screen {
 
     private void refreshUI() {
         this.clearAndInit();
+    }
+
+    @Override
+    public boolean mouseClicked(net.minecraft.client.gui.Click click, boolean doubleClick) {
+        if (click.isLeft()) {
+            for (Dot dot : dots) {
+                dot.applyShake();
+            }
+            return true;
+        }
+        return super.mouseClicked(click, doubleClick);
+    }
+
+    /**
+     * Legacy compatibility - get module state for other systems
+     */
+    public static boolean isModuleEnabled(String moduleName) {
+        Module module = ModuleManager.getInstance().getModule(moduleName);
+        return module != null && module.isEnabled();
     }
 }

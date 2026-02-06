@@ -17,6 +17,7 @@
 
 package com.noadsch12;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.api.EnvType;
@@ -107,7 +108,7 @@ public class HotbarHelper {
     }
 
     private static void jumpToNextFood(PlayerEntity player) {
-        if (!ClientSettingsScreen.jumpToFoodEnabled) return;
+        if (!ModuleManager.getInstance().getModule("Jump to Food").isEnabled()) return;
 
         for (int i = 0; i < 9; i++) {
             ItemStack stack = player.getInventory().getStack(i);

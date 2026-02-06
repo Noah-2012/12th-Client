@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.particle.TotemParticle;
@@ -29,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 class TotemParticleMixin {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onInit(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
-        if (ClientSettingsScreen.HideTotemAnimEnabled) {
+        if (ModuleManager.getInstance().getModule("Hide Totem Animation").isEnabled()) {
             ((TotemParticle) (Object) this).markDead();
         }
     }

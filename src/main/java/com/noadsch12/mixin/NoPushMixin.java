@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class NoPushMixin {
     @Inject(method = "pushOutOfBlocks", at = @At("HEAD"), cancellable = true)
     private void onPush(double x, double z, CallbackInfo ci) {
-        if (!ClientSettingsScreen.AntiKnockbackEnabled) return;
+        if (!ModuleManager.getInstance().getModule("Anti Knockback").isEnabled()) return;
         ci.cancel();
     }
 }

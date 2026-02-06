@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -45,7 +46,7 @@ public class ScoreboardMixin {
             cancellable = true
     )
     private void customScoreboardRender(DrawContext context, ScoreboardObjective objective, CallbackInfo ci) {
-        if (!ClientSettingsScreen.BetterScoreboardEnabled) return;
+        if (!ModuleManager.getInstance().getModule("Better Scoreboard").isEnabled()) return;
         // Cancel vanilla immediately so its "inner squares" never render
         ci.cancel();
 

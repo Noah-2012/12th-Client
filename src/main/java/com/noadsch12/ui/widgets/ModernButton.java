@@ -56,6 +56,18 @@ public class ModernButton extends ButtonWidget {
         return this;
     }
 
+    public boolean shouldRenderTooltip(int mouseX, int mouseY) {
+        return this.isMouseOver(mouseX, mouseY) && customTooltipText != null;
+    }
+
+    public Text getTooltip() {
+        return customTooltipText;
+    }
+
+    public float getTooltipAlpha() {
+        return tooltipAlpha;
+    }
+
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -134,7 +146,8 @@ public class ModernButton extends ButtonWidget {
             if (hoverDuration > FADE_DELAY_MS) {
                 // Increase alpha once delay is passed
                 tooltipAlpha = Math.min(1.0f, tooltipAlpha + (delta * FADE_SPEED));
-                renderCustomTooltip(context, mouseX, mouseY, tooltipAlpha);
+                // THIS GETS HANDLED BY THE SCREEN RENDER METHOD
+                //renderCustomTooltip(context, mouseX, mouseY, tooltipAlpha);
             }
         } else {
             // Reset when mouse leaves
@@ -143,7 +156,7 @@ public class ModernButton extends ButtonWidget {
         }
     }
 
-    private void renderCustomTooltip(DrawContext context, int mouseX, int mouseY, float alpha) {
+    public void renderCustomTooltip(DrawContext context, int mouseX, int mouseY, float alpha) {
         MinecraftClient client = MinecraftClient.getInstance();
 
         // 1. Split the text by \n
@@ -172,11 +185,12 @@ public class ModernButton extends ButtonWidget {
 
         // 4. Color Calculation (ARGB)
         int alphaInt = (int)(alpha * 255);
-        int bgColor = (alphaInt << 24) | 0x121212; // Very dark grey
+        int bgColor = (alphaInt << 24) | 0x121212; // Very dark gray
         int borderColor = (alphaInt << 24) | 0xFFFFFF; // White border
         int textColor = (alphaInt << 24) | 0xE0E0E0; // Off-white text
 
         context.getMatrices().pushMatrix();
+
         context.getMatrices().translate(0, 0);
 
         // 5. Draw Background & Border

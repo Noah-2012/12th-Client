@@ -17,6 +17,7 @@
 
 package com.noadsch12.render;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientBlockEntityEvents;
 import net.minecraft.block.*;
@@ -35,6 +36,7 @@ import org.joml.Vector4f;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Deprecated
 public class ChestESP {
 
     // Persistent storage: Blocks are only removed if broken/unloaded
@@ -55,7 +57,7 @@ public class ChestESP {
     }
 
     public static void render(DrawContext context) {
-        if (!ClientSettingsScreen.ChestESPEnabled) return;
+        if (!ModuleManager.getInstance().getModule("StorageESP").isEnabled()) return;
         init();
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null || client.world == null || client.options.hudHidden) return;

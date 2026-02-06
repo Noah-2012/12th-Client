@@ -19,15 +19,16 @@ package com.noadsch12;
 
 import com.noadsch12.discord.DiscordRichPresenceManager;
 import com.noadsch12.look.ObjModel;
+import com.noadsch12.modules.ModuleConfigLoader;
 import com.noadsch12.networking.ClientStatusPayload;
 import com.noadsch12.networking.ClientUserManager;
-import com.noadsch12.render.ChestESP;
-import com.noadsch12.render.PlayerESP;
+import com.noadsch12.render.RenderESP;
 import com.noadsch12.render.entity.EntityCulling;
 import com.noadsch12.render.ui.CompassHud;
 import com.noadsch12.render.ui.ObjWireframeHud;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import com.noadsch12.util.AntiAFK;
+import com.noadsch12.util.Stealth;
 import com.noadsch12.util.TwelfthCommand;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
@@ -66,6 +67,7 @@ public class TwelfthClient implements ClientModInitializer {
                 ClientCrashHandler.handleCrash(throwable);
             });
 
+            /*
             ClientSettingsScreen.registerVars();
 
             if (TwelfthConfig.check("projectile_ding_enabled")) {
@@ -164,6 +166,26 @@ public class TwelfthClient implements ClientModInitializer {
                 ClientSettingsScreen.CriticalsEnabled = (boolean) TwelfthConfig.getValue("criticals_enabled", "bool");
             } else TwelfthConfig.create("criticals_enabled", "true");
 
+            if (TwelfthConfig.check("stealth_enabled")) {
+                ClientSettingsScreen.StealthModeEnabled = (boolean) TwelfthConfig.getValue("stealth_enabled", "bool");
+            } else TwelfthConfig.create("stealth_enabled", "true");
+
+            if (TwelfthConfig.check("fullbright_enabled")) {
+                ClientSettingsScreen.FullbrightEnabled = (boolean) TwelfthConfig.getValue("fullbright_enabled", "bool");
+            } else TwelfthConfig.create("fullbright_enabled", "true");
+
+            if (TwelfthConfig.check("auto_clicker_enabled")) {
+                ClientSettingsScreen.AutoClickerEnabled = (boolean) TwelfthConfig.getValue("auto_clicker_enabled", "bool");
+            } else TwelfthConfig.create("auto_clicker_enabled", "true");
+
+            if (TwelfthConfig.check("trigger_bot_enabled")) {
+                ClientSettingsScreen.TriggerBotEnabled = (boolean) TwelfthConfig.getValue("trigger_bot_enabled", "bool");
+            } else TwelfthConfig.create("trigger_bot_enabled", "true");
+
+            if (TwelfthConfig.check("auto_cobweb_enabled")) {
+                ClientSettingsScreen.AutoCobWebEnabled = (boolean) TwelfthConfig.getValue("auto_cobweb_enabled", "bool");
+            } else TwelfthConfig.create("auto_cobweb_enabled", "true");
+
             if (TwelfthConfig.check("trail_index")) {
                 ClientSettingsScreen.trailIndex = (int) TwelfthConfig.getValue("trail_index", "int");
             } else TwelfthConfig.create("trail_index", "0");
@@ -171,6 +193,10 @@ public class TwelfthClient implements ClientModInitializer {
             if (TwelfthConfig.check("trail_color_index")) {
                 ClientSettingsScreen.trailColorIndex = (int) TwelfthConfig.getValue("trail_color_index", "int");
             } else TwelfthConfig.create("trail_color_index", "0");
+
+             */
+
+            ModuleConfigLoader.loadConfig();
 
             HotbarHelper.register();
             TwelfthCommand.register();
@@ -223,33 +249,14 @@ public class TwelfthClient implements ClientModInitializer {
                 antiAfk.onTick();
             });
 
-            ChestESP.init();
+            RenderESP.init();
 
             HudRenderCallback.EVENT.register((context, tickCounter) -> {
                 CompassHud.render(context);
-                ChestESP.render(context);
-                PlayerESP.render(context);
+                RenderESP.render(context);
                 ensureModelLoaded();
                 ObjWireframeHud.render(context, myLoadedModel, 39, 38, 42.6f);
             });
-
-        /*
-
-        WorldRenderEvents.END_MAIN.register(context -> {
-            ensureModelLoaded();
-            Vec3d camPos = context.gameRenderer().getCamera().getPos();
-            MatrixStack stack = context.matrices();
-
-            // Example: Render at world origin (0, 70, 0)
-            stack.push();
-            stack.translate(0, 70, 0); // Note: standard translate uses x, y, z
-
-            ObjWireframeRenderer.render(myLoadedModel, stack, context.consumers(), camPos, 1.0f, 1.0f, 1.0f);
-
-            stack.pop();
-        });
-
-         */
 
             CompassHud.addWaypoint("Test", 0.0, 60.0, 0.0);
 
@@ -278,6 +285,8 @@ public class TwelfthClient implements ClientModInitializer {
             ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
                 DiscordRichPresenceManager.updatePresence("Client started", "Im Mainmenu");
             });
+
+            ClientTickEvents.END_CLIENT_TICK.register(Stealth::onTick);
         } catch (Throwable t) {
             ClientCrashHandler.handleCrash(t);
             Runtime.getRuntime().halt(0);

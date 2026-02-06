@@ -20,6 +20,7 @@ package com.noadsch12.util;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.noadsch12.look.ItemHexManager;
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.render.entity.EntityCulling;
 import com.noadsch12.render.entity.EntityESP;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
@@ -27,7 +28,6 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 
 public class TwelfthCommand {
@@ -52,10 +52,10 @@ public class TwelfthCommand {
             }
 
             // also checks if the Default option is set in the Client Settings Screen
-            if (ClientSettingsScreen.EntityCullingEnabled && !cullingEnabled && client.player != null && client.world != null) {
+            if (ModuleManager.getInstance().getModule("Entity Culling").isEnabled() && !cullingEnabled && client.player != null && client.world != null) {
                 EntityCulling.setEnabled(true);
                 cullingEnabled = true;
-            } else if (!ClientSettingsScreen.EntityCullingEnabled && cullingEnabled && client.player != null && client.world != null) {
+            } else if (!ModuleManager.getInstance().getModule("Entity Culling").isEnabled() && cullingEnabled && client.player != null && client.world != null) {
                 EntityCulling.setEnabled(false);
                 cullingEnabled = false;
             }

@@ -12,10 +12,13 @@
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
 	"license": "CC0-1.0",
-	"icon": "textures/gui/icon.png",
+	"icon": "icon.png",
 	"accessWidener": "12th-client.accesswidener",
 	"environment": "*",
 	"entrypoints": {
+        "preLaunch": [
+            "com.noadsch12.CrashCatcherPreLaunch"
+        ],
 		"main": [
 			"com.noadsch12.TwelfthMain"
 		],
@@ -31,8 +34,10 @@
 		"minecraft": "~1.21.10",
 		"java": ">=21",
 		"fabric-api": "*",
-		"fabric-command-api-v2": "*"
-	},
+		"fabric-command-api-v2": "*",
+		"fabric-rendering-v1": "*",
+        "owo": "*"
+    },
 	"suggests": {
 		"another-mod": "*"
 	}

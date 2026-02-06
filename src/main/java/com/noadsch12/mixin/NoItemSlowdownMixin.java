@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,7 +34,7 @@ public abstract class NoItemSlowdownMixin {
         LivingEntity entity = (LivingEntity) (Object) this;
 
         // Only apply to players
-        if (entity instanceof PlayerEntity player && ClientSettingsScreen.NoSlowEnabled) {
+        if (entity instanceof PlayerEntity player && ModuleManager.getInstance().getModule("No Slow").isEnabled()) {
             // isUsingItem() is true when eating, drinking, or using a bow/shield
             if (player.isUsingItem()) {
                 // By default, Minecraft returns 0.2f here.

@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -35,14 +36,14 @@ public class ChatScreenAnimationMixin {
     // Capture the time when the chat screen is initialized (opened)
     @Inject(method = "init", at = @At("HEAD"))
     private void onInit(CallbackInfo ci) {
-        if (ClientSettingsScreen.BetterChatEnabled) {
+        if (ModuleManager.getInstance().getModule("Better Chat").isEnabled()) {
             this.openTime = System.currentTimeMillis();
         }
     }
 
     @Inject(method = "render", at = @At("HEAD"))
     private void startAnimation(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (!ClientSettingsScreen.BetterChatEnabled) return;
+        if (!ModuleManager.getInstance().getModule("Better Chat").isEnabled()) return;
 
         // Ensure we push the matrix as requested
         context.getMatrices().pushMatrix();
@@ -65,7 +66,7 @@ public class ChatScreenAnimationMixin {
 
     @Inject(method = "render", at = @At("TAIL"))
     private void endAnimation(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (ClientSettingsScreen.BetterChatEnabled) {
+        if (ModuleManager.getInstance().getModule("Better Chat").isEnabled()) {
             // Match the push with a popMatrix
             context.getMatrices().popMatrix();
         }

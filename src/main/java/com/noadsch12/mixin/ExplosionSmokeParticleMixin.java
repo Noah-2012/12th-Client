@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.particle.ExplosionSmokeParticle;
 import net.minecraft.client.particle.SpriteProvider;
@@ -33,7 +34,7 @@ public class ExplosionSmokeParticleMixin {
     private void onInit(
             ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider, CallbackInfo ci
     ) {
-        if (ClientSettingsScreen.HideExplosionParticlesEnabled) {
+        if (ModuleManager.getInstance().getModule("Hide Explosion Particles").isEnabled()) {
             ((ExplosionSmokeParticle) (Object) this).markDead();
         }
     }

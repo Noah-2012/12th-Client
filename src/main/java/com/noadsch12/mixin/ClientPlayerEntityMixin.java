@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import com.noadsch12.cheats.AutoArmor;
 import com.noadsch12.cheats.AutoRefill;
@@ -33,9 +34,9 @@ public class ClientPlayerEntityMixin {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
-        if (ClientSettingsScreen.AutoTotemEnabled) AutoTotem.tick();
-        if (ClientSettingsScreen.AutoArmorEnabled) AutoArmor.tick();
-        if (ClientSettingsScreen.AutoRefillEnabled) AutoRefill.tick();
-        if (ClientSettingsScreen.AutoToolEnabled) AutoTool.tick();
+        if (ModuleManager.getInstance().getModule("Auto Totem").isEnabled()) AutoTotem.tick();
+        if (ModuleManager.getInstance().getModule("Auto Armor").isEnabled()) AutoArmor.tick();
+        if (ModuleManager.getInstance().getModule("Auto Refill").isEnabled()) AutoRefill.tick();
+        if (ModuleManager.getInstance().getModule("Auto Tool").isEnabled()) AutoTool.tick();
     }
 }

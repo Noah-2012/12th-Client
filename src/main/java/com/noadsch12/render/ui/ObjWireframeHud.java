@@ -18,7 +18,6 @@
 package com.noadsch12.render.ui;
 
 import com.noadsch12.look.ObjModel;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Util;

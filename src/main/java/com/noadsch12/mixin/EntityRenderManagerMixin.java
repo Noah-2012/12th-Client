@@ -18,6 +18,7 @@
 package com.noadsch12.mixin;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.render.entity.EntityESP;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.render.*;
@@ -43,7 +44,7 @@ public class EntityRenderManagerMixin {
                              Matrix4f positionMatrix, Matrix4f viewMatrix,
                              Matrix4f projectionMatrix, GpuBufferSlice fogBuffer,
                              Vector4f fogColor, boolean renderSky, CallbackInfo ci) {
-        if (ClientSettingsScreen.EntityEspEnabled) {
+        if (ModuleManager.getInstance().getModule("Entity ESP").isEnabled()) {
             EntityESP.render(camera, bufferBuilders.getEntityVertexConsumers(), positionMatrix);
         }
     }

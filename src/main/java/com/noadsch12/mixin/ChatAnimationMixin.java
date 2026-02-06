@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
@@ -83,13 +84,13 @@ public abstract class ChatAnimationMixin {
 
     @Inject(method = "addVisibleMessage", at = @At("TAIL"))
     private void onAddMessage(ChatHudLine line, CallbackInfo ci) {
-        if (!ClientSettingsScreen.BetterChatEnabled) return;
+        if (!ModuleManager.getInstance().getModule("Better Chat").isEnabled()) return;
         this.lastMessageTime = System.currentTimeMillis();
     }
 
     @Inject(method = "render", at = @At("HEAD"))
     private void startAnimation(DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
-        if (!ClientSettingsScreen.BetterChatEnabled) return;
+        if (!ModuleManager.getInstance().getModule("Better Chat").isEnabled()) return;
         context.getMatrices().pushMatrix();
         popped = true;
 
@@ -108,13 +109,13 @@ public abstract class ChatAnimationMixin {
 
     @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V", at = @At("HEAD"), argsOnly = true)
     private Text addSpaceBeforeMessage(Text text) {
-        if (!ClientSettingsScreen.BetterChatEnabled) return text;
+        if (!ModuleManager.getInstance().getModule("Better Chat").isEnabled()) return text;
         return Text.literal("  ").append(text);
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     private void renderPlayerHeads(DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
-        if (!ClientSettingsScreen.BetterChatEnabled) return;
+        if (!ModuleManager.getInstance().getModule("Better Chat").isEnabled()) return;
         if (visibleMessages.isEmpty() || client.options.getChatVisibility().getValue() == ChatVisibility.HIDDEN) return;
 
         int chatWidth = (int) (this.getWidth());

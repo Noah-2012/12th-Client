@@ -17,6 +17,7 @@
 
 package com.noadsch12.render.ui;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -30,7 +31,7 @@ public class CompassHud {
     private static final List<Waypoint> waypoints = new ArrayList<>();
 
     public static void render(DrawContext context) {
-        if (!ClientSettingsScreen.CompassHudEnabled) return;
+        if (!ModuleManager.getInstance().getModule("Compass HUD").isEnabled()) return;
         MinecraftClient client = MinecraftClient.getInstance();
 
         if (client.player == null || client.options.hudHidden) {

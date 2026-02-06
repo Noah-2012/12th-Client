@@ -3,6 +3,8 @@
   "package": "com.noadsch12.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AbstractBlockStateMixin",
+    "ClientConnectionMixin",
     "CobwebCollisionMixin",
     "CrashReportMixin",
     "EntityRendererMixin",
@@ -19,6 +21,7 @@
     "requireAnnotations": true
   },
   "client": [
+    "AutoCobwebMixin",
     "ChatAnimationMixin",
     "ChatScreenAnimationMixin",
     "ClientPlayerEntityMixin",
@@ -44,6 +47,7 @@
     "SplashOverlayMixin",
     "TotemAnimationMixin",
     "TotemParticleMixin",
+    "TriggerBotMixin",
     "VelocityPacketMixin",
     "WindowMixin",
     "WorldRendererAccessor",

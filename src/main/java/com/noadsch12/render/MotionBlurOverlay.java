@@ -1,3 +1,20 @@
+/*
+ * 12th Client
+ * Copyright (C) 2026 Noadsch12
+ *
+ * This file is part of the 12th Client project.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, version 3 of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU Lesser General Public License for more details.
+ */
+
 package com.noadsch12.render;
 
 import javax.swing.*;
@@ -11,12 +28,12 @@ public class MotionBlurOverlay extends JFrame {
     private static final int MAX_TRAIL_FRAMES = 3;
     private static final float[] ALPHA_VALUES = {0.20f, 0.13f, 0.07f};
 
-    private ArrayDeque<BufferedImage> frameQueue;
-    private Robot robot;
+    private final ArrayDeque<BufferedImage> frameQueue;
+    private final Robot robot;
     private Timer captureTimer;
-    private GraphicsDevice gd;
+    private final GraphicsDevice gd;
     private volatile boolean isCapturing = false;
-    private Canvas canvas;
+    private final Canvas canvas;
 
     public MotionBlurOverlay() throws AWTException {
         robot = new Robot();
@@ -83,13 +100,12 @@ public class MotionBlurOverlay extends JFrame {
                 setOpacity(0.0f);
 
                 // Mini-Pause
-                try { Thread.sleep(1); } catch (InterruptedException ex) {}
+                try { Thread.sleep(1); } catch (InterruptedException ignored) {}
 
                 // Screenshot
                 Rectangle bounds = getBounds();
                 BufferedImage screenshot = robot.createScreenCapture(bounds);
 
-                // Stelle Opacity wieder her
                 setOpacity(oldOpacity);
 
                 // Frame zur Queue
@@ -98,7 +114,7 @@ public class MotionBlurOverlay extends JFrame {
 
                     while (frameQueue.size() > MAX_TRAIL_FRAMES) {
                         BufferedImage old = frameQueue.removeLast();
-                        if (old != null) old.flush();
+                        old.flush();
                     }
                 }
 

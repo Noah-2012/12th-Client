@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.entity.ItemEntity;
 import com.noadsch12.render.items.ItemLabelManager;
@@ -35,9 +36,9 @@ public class ItemEntityMixin {
 
         // Only update every 20 ticks (1 second) to save performance,
         // or remove the check for real-time updates.
-        if (entity.age % 10 == 0 && ClientSettingsScreen.ItemDisplayEnabled) {
+        if (entity.age % 10 == 0 && ModuleManager.getInstance().getModule("Item Display").isEnabled()) {
             ItemLabelManager.updateItemLabel(entity, true);
-        } else if (entity.age % 10 == 0 && !ClientSettingsScreen.ItemDisplayEnabled) {
+        } else if (entity.age % 10 == 0 && !ModuleManager.getInstance().getModule("Item Display").isEnabled()) {
             ItemLabelManager.updateItemLabel(entity, false);
         }
     }

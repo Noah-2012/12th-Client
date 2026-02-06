@@ -17,6 +17,7 @@
 
 package com.noadsch12.render;
 
+import com.noadsch12.modules.impl.render.TrailSettings;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
@@ -65,22 +66,9 @@ public class TrailRenderer {
                 float y2 = (float)(end.y - cameraPos.y);
                 float z2 = (float)(end.z - cameraPos.z);
 
-                if (ClientSettingsScreen.trailColorIndex == 0) {
-                    lines.vertex(positionMatrix, x1, y1, z1).color(255, 0, 0, 255).normal(0, 1, 0);
-                    lines.vertex(positionMatrix, x2, y2, z2).color(255, 0, 0, 255).normal(0, 1, 0);
-                } else if (ClientSettingsScreen.trailColorIndex == 1) {
-                    lines.vertex(positionMatrix, x1, y1, z1).color(0, 0, 255, 255).normal(0, 1, 0);
-                    lines.vertex(positionMatrix, x2, y2, z2).color(0, 0, 255, 255).normal(0, 1, 0);
-                } else if (ClientSettingsScreen.trailColorIndex == 2) {
-                    lines.vertex(positionMatrix, x1, y1, z1).color(0, 255, 0, 255).normal(0, 1, 0);
-                    lines.vertex(positionMatrix, x2, y2, z2).color(0, 255, 0, 255).normal(0, 1, 0);
-                } else if (ClientSettingsScreen.trailColorIndex == 3) {
-                    lines.vertex(positionMatrix, x1, y1, z1).color(255, 255, 255, 255).normal(0, 1, 0);
-                    lines.vertex(positionMatrix, x2, y2, z2).color(255, 255, 255, 255).normal(0, 1, 0);
-                } else if (ClientSettingsScreen.trailColorIndex == 4) {
-                    lines.vertex(positionMatrix, x1, y1, z1).color(0, 0, 0, 255).normal(0, 1, 0);
-                    lines.vertex(positionMatrix, x2, y2, z2).color(0, 0, 0, 255).normal(0, 1, 0);
-                }
+                int[] rgb = TrailSettings.getCurrentColorRGB();
+                lines.vertex(positionMatrix, x1, y1, z1).color(rgb[0], rgb[1], rgb[2], 255).normal(0, 1, 0);
+                lines.vertex(positionMatrix, x2, y2, z2).color(rgb[0], rgb[1], rgb[2], 255).normal(0, 1, 0);
             }
         }
 

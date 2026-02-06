@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
@@ -40,7 +41,7 @@ public class CriticalsMixin {
     )
     private void sendFakeCriticalPackets(PlayerEntity player, Entity target, CallbackInfo ci) {
         if (player == null || target == null) return;
-        if (!ClientSettingsScreen.CriticalsEnabled) return;
+        if (!ModuleManager.getInstance().getModule("Criticals").isEnabled()) return;
 
         double x = player.getX();
         double y = player.getY();

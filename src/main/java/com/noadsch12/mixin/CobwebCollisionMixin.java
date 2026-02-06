@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CobwebBlock;
@@ -39,7 +40,7 @@ public class CobwebCollisionMixin {
     @Inject(method = "onEntityCollision", at = @At("HEAD"), cancellable = true)
     private void stopWebSlowdown(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler, boolean bl, CallbackInfo ci) {
         // Use your utility logic or check for player
-        if (entity instanceof PlayerEntity && ClientSettingsScreen.AntiWebEnabled) {
+        if (entity instanceof PlayerEntity && ModuleManager.getInstance().getModule("Anti Web").isEnabled()) {
             // Cancel the method to skip the code that sets velocity to (0.25, 0.05, 0.25)
             ci.cancel();
         }
