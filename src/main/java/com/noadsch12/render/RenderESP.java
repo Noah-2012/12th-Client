@@ -107,8 +107,6 @@ public class RenderESP {
                 renderPlayerTarget(context, client, pos, camPos, projMat, viewMat, sw, sh, color);
             });
         }
-
-        ModuleManager.getInstance().getModule("Player ESP").
     }
 
 
