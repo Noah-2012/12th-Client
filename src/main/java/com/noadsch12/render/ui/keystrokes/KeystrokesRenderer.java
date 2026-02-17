@@ -38,7 +38,7 @@ public class KeystrokesRenderer {
         context.getMatrices().pushMatrix(); // Rule: .pushMatrix()
 
         context.getMatrices().translate(KeystrokesConfig.x, KeystrokesConfig.y);
-        context.getMatrices().scale(KeystrokesConfig.scale, KeystrokesConfig.scale);
+        context.getMatrices().scale((float) KeystrokesConfig.scale, (float) KeystrokesConfig.scale);
 
         // 1. WASD Keys
         drawKey(context, 23, 0, 20, 20, "W", mc.options.forwardKey.isPressed());

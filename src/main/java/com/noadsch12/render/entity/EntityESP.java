@@ -17,6 +17,7 @@
 
 package com.noadsch12.render.entity;
 
+import com.noadsch12.modules.impl.combat.EntityEspModule;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
@@ -31,24 +32,12 @@ import org.joml.Matrix4f;
 
 public class EntityESP {
 
-    private static boolean enabled = true;
-
-    public static void setEnabled(boolean enabled) {
-        EntityESP.enabled = enabled;
-    }
-
-    public static boolean isEnabled() {
-        return enabled;
-    }
-
     public static void render(Camera camera, VertexConsumerProvider vertexConsumers, Matrix4f positionMatrix) {
-        if (!enabled) return;
 
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.player == null || mc.world == null) return;
 
         Vec3d cameraPos = camera.getPos();
-        int simulationDistance = mc.options.getSimulationDistance().getValue() * 16;
 
         MatrixStack matrices = new MatrixStack();
         matrices.multiplyPositionMatrix(positionMatrix);
@@ -56,9 +45,14 @@ public class EntityESP {
         VertexConsumer lines = vertexConsumers.getBuffer(RenderLayer.getLines());
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
+        double maxDistSq = EntityEspModule.maxDistance * EntityEspModule.maxDistance;
+
         for (Entity entity : mc.world.getEntities()) {
-            if (entity == mc.player) continue;
-            if (entity.squaredDistanceTo(mc.player) > simulationDistance * simulationDistance) continue;
+
+            if (!EntityEspModule.showSelf && entity == mc.player) continue;
+            if (entity.squaredDistanceTo(mc.player) > maxDistSq) continue;
+
+            if (!shouldRender(entity)) continue;
 
             Box box = entity.getBoundingBox();
             float[] color = getEntityColor(entity);
@@ -70,6 +64,47 @@ public class EntityESP {
             immediate.draw(RenderLayer.getLines());
         }
     }
+
+    private static boolean shouldRender(Entity entity) {
+
+        if (entity instanceof PlayerEntity)
+            return EntityEspModule.showPlayers;
+
+        if (entity.getType().getSpawnGroup().isPeaceful())
+            return EntityEspModule.showPassive;
+
+        return EntityEspModule.showHostile;
+    }
+
+    private static float[] getEntityColor(Entity entity) {
+
+        if (!EntityEspModule.useCustomColors) {
+            if (entity instanceof PlayerEntity) return new float[]{1,0,0};
+            if (entity.getType().getSpawnGroup().isPeaceful()) return new float[]{0,1,0};
+            return new float[]{1,1,0};
+        }
+
+        if (entity instanceof PlayerEntity)
+            return new float[]{
+                    (float)EntityEspModule.playerR,
+                    (float)EntityEspModule.playerG,
+                    (float)EntityEspModule.playerB
+            };
+
+        if (entity.getType().getSpawnGroup().isPeaceful())
+            return new float[]{
+                    (float)EntityEspModule.passiveR,
+                    (float)EntityEspModule.passiveG,
+                    (float)EntityEspModule.passiveB
+            };
+
+        return new float[]{
+                (float)EntityEspModule.hostileR,
+                (float)EntityEspModule.hostileG,
+                (float)EntityEspModule.hostileB
+        };
+    }
+
 
     private static void drawBox(VertexConsumer buffer, Matrix4f matrix, Box box, Vec3d cam, float r, float g, float b) {
         float x1 = (float)(box.minX - cam.x);
@@ -99,15 +134,5 @@ public class EntityESP {
     private static void line(VertexConsumer buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b) {
         buffer.vertex(matrix, x1, y1, z1).color(r, g, b, 1f).normal(0, 1, 0);
         buffer.vertex(matrix, x2, y2, z2).color(r, g, b, 1f).normal(0, 1, 0);
-    }
-
-    private static float[] getEntityColor(Entity entity) {
-        if (entity instanceof PlayerEntity) {
-            return new float[]{1.0f, 0.0f, 0.0f};
-        } else if (entity.getType().getSpawnGroup().isPeaceful()) {
-            return new float[]{0.0f, 1.0f, 0.0f};
-        } else {
-            return new float[]{1.0f, 1.0f, 0.0f};
-        }
     }
 }

@@ -17,7 +17,7 @@
 
 package com.noadsch12;
 
-import com.noadsch12.ClientCrashHandler;
+import com.noadsch12.MACRO;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 
 public class CrashCatcherPreLaunch implements PreLaunchEntrypoint {
@@ -32,7 +32,7 @@ public class CrashCatcherPreLaunch implements PreLaunchEntrypoint {
 
             // Your handler FIRST
             try {
-                ClientCrashHandler.handleCrash(throwable);
+                MACRO.handleCrash(throwable);
             } catch (Throwable ignored) {}
 
             // Then Minecraft/Fabric handler

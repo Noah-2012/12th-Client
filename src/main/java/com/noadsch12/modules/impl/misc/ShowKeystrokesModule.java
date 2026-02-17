@@ -18,11 +18,47 @@
 package com.noadsch12.modules.impl.misc;
 import com.noadsch12.modules.Category;
 import com.noadsch12.modules.Module;
+import com.noadsch12.render.ui.keystrokes.KeystrokesConfig;
+import com.noadsch12.ui.GLWindow;
 import net.minecraft.item.Items;
+
+import java.util.List;
 
 public class ShowKeystrokesModule extends Module {
     public ShowKeystrokesModule() {
         super("Show Keystrokes", "Show Keystrokes", Category.MISC,
             "Shows Keystrokes with Options like CPS, WASD and Mouse buttons", Items.ANVIL);
+    }
+
+    @Override
+    protected GLWindow createSettingsWindow() {
+        GLWindow window = new GLWindow("Keystrokes Settings", 50, 50);
+
+        window.setDimensions(200, 90);
+
+        int y = 4;
+
+        window.addCheckbox("Spacebar", 4, y, true, state -> {
+            KeystrokesConfig.showSpace = state;
+        });
+        y += 14;
+
+        window.addCheckbox("Mouse Buttons", 4, y, true, state -> {
+            KeystrokesConfig.showMouseButtons = state;
+        });
+        y += 14;
+
+        window.addCheckbox("CPS Display", 4, y, true, state -> {
+            KeystrokesConfig.showCPS = state;
+        });
+        y += 14;
+
+        window.addSlider("HUD Scale", 4, y, 100, 0.5, 1.5, 1.0, value -> {
+            KeystrokesConfig.scale = value;
+        });
+
+        window.setVisible(false);
+
+        return window;
     }
 }

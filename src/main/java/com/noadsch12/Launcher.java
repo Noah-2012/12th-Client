@@ -52,13 +52,13 @@ public class Launcher {
             String stacktrace = Files.readString(Path.of(crashFile));
 
             // Build your CrashReport object
-            CrashReport report = new CrashReport(
+            MACROReport report = new MACROReport(
                     "Minecraft crashed",
                     stacktrace
             );
 
             // Open your existing UI
-            CrashWindow.show(report);
+            MACROWindow.show(report);
 
         } catch (Exception e) {
             e.printStackTrace();

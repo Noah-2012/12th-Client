@@ -18,6 +18,7 @@
 package com.noadsch12.mixin;
 
 import com.noadsch12.modules.ModuleManager;
+import com.noadsch12.modules.impl.misc.BetterChatModule;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
@@ -85,12 +86,16 @@ public abstract class ChatAnimationMixin {
     @Inject(method = "addVisibleMessage", at = @At("TAIL"))
     private void onAddMessage(ChatHudLine line, CallbackInfo ci) {
         if (!ModuleManager.getInstance().getModule("Better Chat").isEnabled()) return;
+        if (!BetterChatModule.showAnimations) return;
+
         this.lastMessageTime = System.currentTimeMillis();
     }
 
     @Inject(method = "render", at = @At("HEAD"))
     private void startAnimation(DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
         if (!ModuleManager.getInstance().getModule("Better Chat").isEnabled()) return;
+        if (!BetterChatModule.showAnimations) return;
+
         context.getMatrices().pushMatrix();
         popped = true;
 
@@ -107,19 +112,27 @@ public abstract class ChatAnimationMixin {
         }
     }
 
-    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V", at = @At("HEAD"), argsOnly = true)
+    @ModifyVariable(
+            method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V",
+            at = @At("HEAD"),
+            argsOnly = true
+    )
     private Text addSpaceBeforeMessage(Text text) {
         if (!ModuleManager.getInstance().getModule("Better Chat").isEnabled()) return text;
+        if (!BetterChatModule.showPlayerHeads) return text;
+
         return Text.literal("  ").append(text);
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     private void renderPlayerHeads(DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
         if (!ModuleManager.getInstance().getModule("Better Chat").isEnabled()) return;
+        if (!BetterChatModule.showPlayerHeads) return;
         if (visibleMessages.isEmpty() || client.options.getChatVisibility().getValue() == ChatVisibility.HIDDEN) return;
 
         int chatWidth = (int) (this.getWidth());
-        int chatHeight = (int) (focused ? client.inGameHud.getChatHud().getHeight() : client.inGameHud.getChatHud().getHeight() * client.options.getChatHeightUnfocused().getValue());
+        int chatHeight = (int) (focused ? client.inGameHud.getChatHud().getHeight()
+                : client.inGameHud.getChatHud().getHeight() * client.options.getChatHeightUnfocused().getValue());
 
         int windowHeight = context.getScaledWindowHeight();
         int chatX = 2;
@@ -140,7 +153,6 @@ public abstract class ChatAnimationMixin {
 
             int lineY = chatY - (i * 9) - 9;
 
-            // Namen extrahieren
             StringBuilder sb = new StringBuilder();
             line.content().accept((index, style, codePoint) -> {
                 sb.append(Character.toChars(codePoint));
@@ -171,13 +183,8 @@ public abstract class ChatAnimationMixin {
     @Unique
     private int getMessageOpacity(ChatHudLine.Visible line, int currentTick) {
         int age = currentTick - line.addedTime();
-
-        if (age < 200) {
-            return 255;
-        }
-
+        if (age < 200) return 255;
         int opacity = 255 - (age - 200) * 255 / 40;
-
         return Math.max(0, Math.min(255, opacity));
     }
 
@@ -185,11 +192,8 @@ public abstract class ChatAnimationMixin {
     private String extractPlayerName(String message) {
         Matcher matcher1 = PLAYER_NAME_PATTERN_SERVER1.matcher(message);
         Matcher matcher2 = PLAYER_NAME_PATTERN_VANILLA.matcher(message);
-        if (matcher1.find()) {
-            return matcher1.group(1);
-        } else if (matcher2.find()) {
-            return matcher2.group(1);
-        }
+        if (matcher1.find()) return matcher1.group(1);
+        if (matcher2.find()) return matcher2.group(1);
         return null;
     }
 
@@ -265,6 +269,8 @@ public abstract class ChatAnimationMixin {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void endAnimation(DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused, CallbackInfo ci) {
+        if (!BetterChatModule.showAnimations) return;
+
         if (popped) {
             context.getMatrices().popMatrix();
             popped = false;

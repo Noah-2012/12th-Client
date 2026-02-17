@@ -17,7 +17,9 @@
 
 package com.noadsch12.ui.widgets;
 
+import blue.endless.jankson.annotation.Nullable;
 import com.noadsch12.annotations.NotUpdated;
+import com.noadsch12.modules.Module;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -35,6 +37,7 @@ public class ModernButton extends ButtonWidget {
     private float hoverProgress = 0.0f;
 
     private Text customTooltipText;
+    @Nullable private Module linkedModule;
 
     private float scrollOffset = 0.0f;
     private float scrollTimer = 0.0f;
@@ -53,6 +56,11 @@ public class ModernButton extends ButtonWidget {
 
     public ModernButton withTooltip(String text) {
         this.customTooltipText = Text.of(text);
+        return this;
+    }
+
+    public ModernButton withModule(Module module) {
+        this.linkedModule = module;
         return this;
     }
 
@@ -280,5 +288,10 @@ public class ModernButton extends ButtonWidget {
         context.fill(x + w - 2, y + 1, x + w - 1, y + 2, color);
         context.fill(x + 1, y + h - 2, x + 2, y + h - 1, color);
         context.fill(x + w - 2, y + h - 2, x + w - 1, y + h - 1, color);
+    }
+
+    // Add to ModernButton
+    public Module getLinkedModule() {
+        return linkedModule;
     }
 }

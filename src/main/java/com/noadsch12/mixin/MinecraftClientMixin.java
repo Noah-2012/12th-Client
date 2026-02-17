@@ -18,14 +18,20 @@
 package com.noadsch12.mixin;
 
 import blue.endless.jankson.annotation.Nullable;
+import com.noadsch12.cheats.ChestStealer;
 import com.noadsch12.cheats.PlayerAimbotHandler;
 import com.noadsch12.look.ItemHexManager;
 import com.noadsch12.modules.ModuleManager;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
+import com.noadsch12.event.EventBus;
+import com.noadsch12.event.events.TickEvent;
+import com.noadsch12.modules.impl.combat.AutoClickerModule;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Mouse;
 import net.minecraft.client.gui.screen.Screen;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -37,6 +43,14 @@ public abstract class MinecraftClientMixin {
     @Nullable
     public Screen currentScreen;
     @Shadow protected abstract boolean doAttack();
+    @Shadow protected abstract void doItemUse();
+
+    @Unique
+    private long lastAutoClickTime = 0;
+
+    @Shadow
+    @Final
+    public Mouse mouse;
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void onTick(CallbackInfo ci) {
@@ -46,10 +60,53 @@ public abstract class MinecraftClientMixin {
             PlayerAimbotHandler.updateAimbot(client);
         }
 
-        if (ModuleManager.getInstance().getModule("Auto Clicker").isEnabled() && this.currentScreen == null) {
-            this.doAttack();
+        AutoClickerModule ac =
+                (AutoClickerModule) ModuleManager.getInstance().getModule("Auto Clicker");
+
+        if (ac != null && ac.isEnabled() && this.currentScreen == null) {
+
+            long now = System.currentTimeMillis();
+
+            // delay check
+            if (AutoClickerModule.delayEnabled &&
+                    now - lastAutoClickTime < AutoClickerModule.delay) {
+                return;
+            }
+
+            int button = AutoClickerModule.mouseButton; // 0 left, 1 right
+
+            // hold mode check
+            if (AutoClickerModule.holdOnly) {
+                if (AutoClickerModule.mouseButton == 0 && !client.options.attackKey.isPressed())
+                    return;
+
+                if (AutoClickerModule.mouseButton == 1 && !client.options.useKey.isPressed())
+                    return;
+            }
+
+            // perform click
+            if (button == 0) {
+                this.doAttack();
+            } else {
+                this.doItemUse();
+            }
+
+            lastAutoClickTime = now;
         }
 
+        ChestStealer.tick();
+
         ItemHexManager.tick();
+    }
+
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void tickPre(CallbackInfo ci) {
+        EventBus.post(new TickEvent.Pre());
+    }
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void tickPost(CallbackInfo ci) {
+        EventBus.post(new TickEvent.Post());
     }
 }

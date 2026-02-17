@@ -17,7 +17,7 @@
 
 package com.noadsch12.mixin;
 
-import com.noadsch12.ClientCrashHandler;
+import com.noadsch12.MACRO;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.crash.CrashReport;
 import org.spongepowered.asm.mixin.Mixin;
@@ -51,7 +51,7 @@ public class MinecraftClientCrashMixin {
         accessor.setCrashReportSupplier(() -> {
             CrashReport report = original.get();
             if (report != null) {
-                ClientCrashHandler.handleCrash(report.getCause());
+                MACRO.handleCrash(report.getCause());
             }
             return report;
         });

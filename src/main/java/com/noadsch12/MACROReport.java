@@ -20,23 +20,23 @@ package com.noadsch12;
 import java.io.*;
 import java.time.LocalDateTime;
 
-public class CrashReport {
+public class MACROReport {
 
     public final String message;
     public final String stacktrace;
     public final LocalDateTime time;
 
-    CrashReport(String message, String stacktrace) {
+    MACROReport(String message, String stacktrace) {
         this.message = message;
         this.stacktrace = stacktrace;
         this.time = LocalDateTime.now();
     }
 
-    public static CrashReport fromThrowable(Throwable t) {
+    public static MACROReport fromThrowable(Throwable t) {
         StringWriter sw = new StringWriter();
         t.printStackTrace(new PrintWriter(sw));
 
-        return new CrashReport(
+        return new MACROReport(
                 t.toString(),
                 sw.toString()
         );

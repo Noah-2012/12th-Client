@@ -4,8 +4,8 @@
       "type": "ttf",
       "file": "12th-client:gothic.ttf",
       "shift": [0,0],
-      "size": 9,
-      "oversample": 5
+      "size": 8,
+      "oversample": 10
     }
   ]
 }

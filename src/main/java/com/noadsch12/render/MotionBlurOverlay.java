@@ -19,6 +19,8 @@ package com.noadsch12.render;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayDeque;
 

@@ -26,6 +26,7 @@ import com.noadsch12.render.RenderESP;
 import com.noadsch12.render.entity.EntityCulling;
 import com.noadsch12.render.ui.CompassHud;
 import com.noadsch12.render.ui.ObjWireframeHud;
+import com.noadsch12.ui.GLWindow;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import com.noadsch12.util.AntiAFK;
 import com.noadsch12.util.Stealth;
@@ -64,7 +65,7 @@ public class TwelfthClient implements ClientModInitializer {
             LOGGER.info("12th Client - Client initialized!");
 
             Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-                ClientCrashHandler.handleCrash(throwable);
+                MACRO.handleCrash(throwable);
             });
 
             /*
@@ -251,12 +252,18 @@ public class TwelfthClient implements ClientModInitializer {
 
             RenderESP.init();
 
+
+
+
             HudRenderCallback.EVENT.register((context, tickCounter) -> {
                 CompassHud.render(context);
                 RenderESP.render(context);
+
                 ensureModelLoaded();
                 ObjWireframeHud.render(context, myLoadedModel, 39, 38, 42.6f);
             });
+
+
 
             CompassHud.addWaypoint("Test", 0.0, 60.0, 0.0);
 
@@ -288,7 +295,7 @@ public class TwelfthClient implements ClientModInitializer {
 
             ClientTickEvents.END_CLIENT_TICK.register(Stealth::onTick);
         } catch (Throwable t) {
-            ClientCrashHandler.handleCrash(t);
+            MACRO.handleCrash(t);
             Runtime.getRuntime().halt(0);
         }
     }

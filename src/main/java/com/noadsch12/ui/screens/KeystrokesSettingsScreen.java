@@ -132,8 +132,8 @@ public class KeystrokesSettingsScreen extends Screen {
 
     private boolean isHoveringHUD(double mx, double my) {
         // Dynamic box size for dragging detection
-        float sizeX = 75 * KeystrokesConfig.scale;
-        float sizeY = (KeystrokesConfig.showSpace ? 100 : 75) * KeystrokesConfig.scale;
+        double sizeX = 75 * KeystrokesConfig.scale;
+        double sizeY = (KeystrokesConfig.showSpace ? 100 : 75) * KeystrokesConfig.scale;
         return mx >= KeystrokesConfig.x && mx <= KeystrokesConfig.x + sizeX &&
                 my >= KeystrokesConfig.y && my <= KeystrokesConfig.y + sizeY;
     }

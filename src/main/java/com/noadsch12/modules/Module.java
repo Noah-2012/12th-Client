@@ -18,6 +18,7 @@
 package com.noadsch12.modules;
 
 import com.noadsch12.TwelfthConfig;
+import com.noadsch12.ui.GLWindow;
 import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 
@@ -33,6 +34,7 @@ public abstract class Module {
     private final String tooltip;
     private final Item iconItem;
     private boolean enabled;
+    private GLWindow settingsWindow;
 
     public Module(String name, String displayName, Category category, String tooltip, Item iconItem) {
         this.name = name;
@@ -58,6 +60,13 @@ public abstract class Module {
         // Override in subclasses if needed
     }
 
+    /*
+     * Override for a optional Settings Screen
+     */
+    protected GLWindow createSettingsWindow() {
+        return null; // default: no settings
+    }
+
     /**
      * Toggle the module on/off
      */
@@ -79,6 +88,16 @@ public abstract class Module {
         } else {
             onDisable();
         }
+    }
+
+    /*
+     * Public getter for the optional Settings Screen
+     */
+    public GLWindow getSettingsWindow() {
+        if (settingsWindow == null) {
+            settingsWindow = createSettingsWindow();
+        }
+        return settingsWindow;
     }
 
     /**

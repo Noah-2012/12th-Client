@@ -25,7 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ClientCrashHandler {
+public class MACRO {
 
     private static final AtomicBoolean CRASHED = new AtomicBoolean(false);
 

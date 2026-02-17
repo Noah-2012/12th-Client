@@ -18,11 +18,45 @@
 package com.noadsch12.modules.impl.combat;
 import com.noadsch12.modules.Category;
 import com.noadsch12.modules.Module;
+import com.noadsch12.ui.GLWindow;
 import net.minecraft.item.Items;
 
 public class AutoArmorModule extends Module {
+    public static double delay = 100;
+    public static boolean delayEnabled = true;
+    public static boolean weakestFirst = true;
+
     public AutoArmorModule() {
         super("Auto Armor", "Auto Armor", Category.COMBAT,
             "Automatically places the armor in the right slots", Items.DIAMOND_CHESTPLATE);
+    }
+
+    @Override
+    public GLWindow createSettingsWindow() {
+        GLWindow window = new GLWindow("Auto Armor Settings", 50, 50);
+
+        window.setDimensions(200, 90);
+
+        int y = 4;
+
+        window.addCheckbox("Weakest First", 4, y, weakestFirst, state -> {
+            weakestFirst = state;
+        });
+
+        y += 14;
+
+        window.addCheckbox("Enable Delay", 4, y, delayEnabled, state -> {
+           delayEnabled = state;
+        });
+
+        y += 14;
+
+        window.addSlider("Delay (ms)", 4, y, 150, 0, 300, delay, value -> {
+            delay = value;
+        });
+
+        window.setVisible(false);
+
+        return window;
     }
 }

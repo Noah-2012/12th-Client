@@ -25,7 +25,9 @@ import com.noadsch12.modules.impl.misc.ShowKeystrokesModule;
 import com.noadsch12.modules.impl.render.ProjectileTrailModule;
 import com.noadsch12.modules.impl.render.TrailSettings;
 import com.noadsch12.ui.BlurHandler;
+import com.noadsch12.ui.GLWindow;
 import com.noadsch12.ui.widgets.ModernButton;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -149,9 +151,10 @@ public class ClientSettingsScreen extends Screen {
                         // Handle special module logic
                         handleSpecialModuleToggle(module);
                     }
-            ).withTooltip(module.getTooltip());
+            ).withTooltip(module.getTooltip()).withModule(module);
 
             this.addDrawableChild(button);
+
             currentY += BUTTON_SPACING;
         }
 
@@ -204,7 +207,10 @@ public class ClientSettingsScreen extends Screen {
                 BUTTON_WIDTH,
                 BUTTON_HEIGHT,
                 Text.literal("Open Keystroke Settings"),
-                btn -> this.client.setScreen(new KeystrokesSettingsScreen(this))
+                btn -> {
+                    assert this.client != null;
+                    this.client.setScreen(new KeystrokesSettingsScreen(this));
+                }
         );
         keystrokeSettings.active = keystrokesModule != null && keystrokesModule.isEnabled();
         this.addDrawableChild(keystrokeSettings);
@@ -215,7 +221,10 @@ public class ClientSettingsScreen extends Screen {
                 BUTTON_WIDTH,
                 BUTTON_HEIGHT,
                 Text.literal("Open Block Outline Settings"),
-                btn -> this.client.setScreen(new BlockOutlineScreen(this))
+                btn -> {
+                    assert this.client != null;
+                    this.client.setScreen(new BlockOutlineScreen(this));
+                }
         ));
     }
 
@@ -277,6 +286,7 @@ public class ClientSettingsScreen extends Screen {
         ).withTooltip("Intentionally crashes the client\n(for testing the crash handler)"));
 
         // Back button (only show when not in-game)
+        assert this.client != null;
         if (this.client.world == null) {
             this.addDrawableChild(new ModernButton(
                     centerX - 50,
@@ -301,6 +311,7 @@ public class ClientSettingsScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+        assert this.client != null;
         if (this.client.world != null) {
             BlurHandler.executeBlur(context, this.width, this.height, 2.0f);
             super.render(context, mouseX, mouseY, deltaTicks);
@@ -438,13 +449,11 @@ public class ClientSettingsScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(net.minecraft.client.gui.Click click, boolean doubleClick) {
-        if (click.isLeft()) {
-            for (Dot dot : dots) {
-                dot.applyShake();
-            }
-            return true;
+    public boolean mouseClicked(Click click, boolean doubleClick) {
+        if (click.buttonInfo().button() == 0) {
+            for (Dot dot : dots) dot.applyShake();
         }
+
         return super.mouseClicked(click, doubleClick);
     }
 

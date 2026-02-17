@@ -18,7 +18,7 @@
 package com.noadsch12.mixin;
 
 import com.noadsch12.modules.ModuleManager;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
+import com.noadsch12.modules.impl.misc.BetterChatModule;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,45 +30,43 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ChatScreen.class)
 public class ChatScreenAnimationMixin {
 
-    @Unique
-    private long openTime;
+    @Unique private long openTime;
+    @Unique private boolean pushed = false;
 
-    // Capture the time when the chat screen is initialized (opened)
     @Inject(method = "init", at = @At("HEAD"))
     private void onInit(CallbackInfo ci) {
-        if (ModuleManager.getInstance().getModule("Better Chat").isEnabled()) {
-            this.openTime = System.currentTimeMillis();
-        }
+        if (!ModuleManager.getInstance().getModule("Better Chat").isEnabled()) return;
+        if (!BetterChatModule.showAnimations) return;
+
+        this.openTime = System.currentTimeMillis();
     }
 
     @Inject(method = "render", at = @At("HEAD"))
     private void startAnimation(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!ModuleManager.getInstance().getModule("Better Chat").isEnabled()) return;
+        if (!BetterChatModule.showAnimations) return;
 
-        // Ensure we push the matrix as requested
         context.getMatrices().pushMatrix();
+        pushed = true;
 
         long elapsed = System.currentTimeMillis() - openTime;
-        long duration = 300; // Matching your message animation duration
+        long duration = 300;
 
         if (elapsed < duration) {
             float progress = (float) elapsed / duration;
-            // Using the same Quartic Ease-Out as your ChatHud animation
             float ease = 1.0f - (float) Math.pow(1.0 - progress, 4);
-
-            // Slide up from 20 pixels below (adjust the 20.0f for more/less slide)
             float yOffset = 20.0f * (1.0f - ease);
-
-            // Per your instructions: translate(x, y)
             context.getMatrices().translate(0.0f, yOffset);
         }
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     private void endAnimation(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (ModuleManager.getInstance().getModule("Better Chat").isEnabled()) {
-            // Match the push with a popMatrix
+        if (!BetterChatModule.showAnimations) return;
+
+        if (pushed) {
             context.getMatrices().popMatrix();
+            pushed = false;
         }
     }
 }

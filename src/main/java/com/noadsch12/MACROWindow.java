@@ -30,9 +30,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CrashWindow {
+public class MACROWindow {
 
-    public static void show(CrashReport report) {
+    public static void show(MACROReport report) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("12th Client – Crash Management");
             frame.setSize(900, 600);
@@ -173,13 +173,13 @@ public class CrashWindow {
 
     // ================= LOGIC =================
 
-    private static String buildSummaryWithCause(CrashReport report) {
+    private static String buildSummaryWithCause(MACROReport report) {
         return buildCrashSummary(report)
                 + "\n--- POSSIBLE CAUSE ---\n\n"
                 + detectPossibleCause(report.stacktrace);
     }
 
-    private static String buildCrashSummary(CrashReport report) {
+    private static String buildCrashSummary(MACROReport report) {
         String stack = report.stacktrace;
         String exception = "Unknown";
         String message = "No message";
@@ -369,7 +369,7 @@ public class CrashWindow {
     }
 
     private static BufferedImage loadLogo() {
-        try (InputStream is = CrashWindow.class.getResourceAsStream("/assets/12th-client/logo.png")) {
+        try (InputStream is = MACROWindow.class.getResourceAsStream("/assets/12th-client/logo.png")) {
             return is != null ? ImageIO.read(is) : null;
         } catch (IOException e) {
             return null;

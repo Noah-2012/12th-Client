@@ -65,6 +65,9 @@ public class ModuleManager {
         register(new AntiKnockbackModule());
         register(new AutoRefillModule());
         register(new AutoToolModule());
+        register(new ChestStealerModule());
+        register(new GhostHandModule());
+        register(new FreecamModule());
 
         // MISC
         register(new JumpToFoodModule());

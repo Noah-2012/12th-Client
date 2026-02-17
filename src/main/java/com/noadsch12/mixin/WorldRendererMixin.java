@@ -18,6 +18,7 @@
 package com.noadsch12.mixin;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.render.TrailRenderer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.state.OutlineRenderState;
@@ -56,6 +57,9 @@ public class WorldRendererMixin {
 
     @Inject(method = "drawBlockOutline", at = @At("HEAD"), cancellable = true)
     private void onDrawBlockOutline(MatrixStack matrices, VertexConsumer vertexConsumer, double x, double y, double z, OutlineRenderState state, int i, CallbackInfo ci) {
+        if (ModuleManager.getInstance().getModule("Freecam").isEnabled())
+            ci.cancel();
+
         if (BlockOutlineSettings.enabled) {
             ci.cancel(); // Prevent vanilla outline
 
