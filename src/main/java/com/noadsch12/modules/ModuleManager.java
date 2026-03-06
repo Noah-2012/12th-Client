@@ -86,6 +86,7 @@ public class ModuleManager {
         register(new EntityCullingModule());
         register(new CompassHudModule());
         register(new FullbrightModule());
+        register(new ItemRotationModule());
         register(new ProjectileDingModule());
         register(new ProjectileTrailModule());
 

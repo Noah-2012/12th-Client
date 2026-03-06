@@ -9,6 +9,8 @@ FIELD	com/noadsch12/mixin/EntityMixin	Lnet/minecraft/entity/data/DataTracker;	da
 FIELD	com/noadsch12/mixin/EntityRenderManagerMixin	Lnet/minecraft/client/render/BufferBuilderStorage;	bufferBuilders	field_20951
 FIELD	com/noadsch12/mixin/GhostHandMixin	Lnet/minecraft/client/MinecraftClient;	client	field_4015
 FIELD	com/noadsch12/mixin/HandledScreenMixin	Lnet/minecraft/screen/ScreenHandler;	handler	field_2797
+FIELD	com/noadsch12/mixin/HeldItemRendererMixin	Lnet/minecraft/item/ItemStack;	mainHand	field_4047
+FIELD	com/noadsch12/mixin/HeldItemRendererMixin	Lnet/minecraft/item/ItemStack;	offHand	field_4048
 FIELD	com/noadsch12/mixin/MinecraftClientCrashMixin	Ljava/util/function/Supplier;	crashReportSupplier	field_1747
 FIELD	com/noadsch12/mixin/MinecraftClientMixin	Lnet/minecraft/client/gui/screen/Screen;	currentScreen	field_1755
 FIELD	com/noadsch12/mixin/MinecraftClientMixin	Lnet/minecraft/client/Mouse;	mouse	field_1729
@@ -25,6 +27,13 @@ METHOD	com/noadsch12/mixin/ChatAnimationMixin	()I	getWidth	method_1811
 METHOD	com/noadsch12/mixin/ChatAnimationMixin	()D	getChatScale	method_1814
 METHOD	com/noadsch12/mixin/EntityMixin	(Lnet/minecraft/registry/tag/TagKey;)Z	isSubmergedIn	method_5777
 METHOD	com/noadsch12/mixin/EntityMixin	()Z	isOnGround	method_24828
+METHOD	com/noadsch12/mixin/HeldItemRendererMixin	(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;IFFF)V	renderMapInBothHands	method_3231
+METHOD	com/noadsch12/mixin/HeldItemRendererMixin	(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;IFLnet/minecraft/util/Arm;FLnet/minecraft/item/ItemStack;)V	renderMapInOneHand	method_3222
+METHOD	com/noadsch12/mixin/HeldItemRendererMixin	(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;IFFLnet/minecraft/util/Arm;)V	renderArmHoldingItem	method_3219
+METHOD	com/noadsch12/mixin/HeldItemRendererMixin	(Lnet/minecraft/client/util/math/MatrixStack;FLnet/minecraft/util/Arm;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/PlayerEntity;)V	applyEatOrDrinkTransformation	method_3218
+METHOD	com/noadsch12/mixin/HeldItemRendererMixin	(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Arm;F)V	applyEquipOffset	method_3224
+METHOD	com/noadsch12/mixin/HeldItemRendererMixin	(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;I)V	renderItem	method_3233
+METHOD	com/noadsch12/mixin/HeldItemRendererMixin	(Lnet/minecraft/client/network/AbstractClientPlayerEntity;FFLnet/minecraft/util/Hand;FLnet/minecraft/item/ItemStack;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;I)V	renderFirstPersonItem	method_3228
 METHOD	com/noadsch12/mixin/MinecraftClientMixin	()Z	doAttack	method_1536
 METHOD	com/noadsch12/mixin/MinecraftClientMixin	()V	doItemUse	method_1583
 METHOD	com/noadsch12/mixin/TriggerBotMixin	()Z	doAttack	method_1536

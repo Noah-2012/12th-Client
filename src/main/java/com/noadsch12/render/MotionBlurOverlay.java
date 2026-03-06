@@ -50,6 +50,8 @@ public class MotionBlurOverlay extends JFrame {
         setFocusable(false);
         setType(Window.Type.UTILITY);
 
+
+
         // Canvas statt JPanel für bessere Performance
         canvas = new Canvas() {
             @Override

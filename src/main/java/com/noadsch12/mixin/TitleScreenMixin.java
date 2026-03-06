@@ -17,9 +17,6 @@
 
 package com.noadsch12.mixin;
 
-import com.noadsch12.event.EventBus;
-import com.noadsch12.ui.DemoWindowFactory;
-import com.noadsch12.ui.GLWindow;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
 import com.noadsch12.ui.screens.ClientInfoScreen;
 import com.noadsch12.ui.widgets.AnimatedButtonWidget;
@@ -74,6 +71,7 @@ public abstract class TitleScreenMixin {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void renderClientBrand(DrawContext drawContext, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+
         MinecraftClient client = MinecraftClient.getInstance();
         TextRenderer textRenderer = client.textRenderer;
 
@@ -85,6 +83,7 @@ public abstract class TitleScreenMixin {
         String crd_msg3 = "for promoting";
 
         int screenWidth = drawContext.getScaledWindowWidth();
+        int screenHeight = drawContext.getScaledWindowHeight();
 
         // Logo-Dimensionen
         int logoWidth = 128;
