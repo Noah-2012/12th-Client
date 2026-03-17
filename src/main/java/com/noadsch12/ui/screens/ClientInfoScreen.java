@@ -17,18 +17,16 @@
 
 package com.noadsch12.ui.screens;
 
-import com.noadsch12.BasicGlobals;
-import com.noadsch12.util.GithubReleaseFetcher;
+import com.noadsch12.util.BasicGlobals;
+import com.noadsch12.util.net.GithubReleaseFetcher;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import java.net.URI;
 
 public class ClientInfoScreen extends Screen {
-    private static final Identifier INFO_BACKGROUND = Identifier.of("12th-client", "textures/gui/info_bg.png");
     private final Screen parent;
 
     // Client Info

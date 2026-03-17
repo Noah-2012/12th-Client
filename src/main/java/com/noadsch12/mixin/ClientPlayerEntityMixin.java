@@ -17,20 +17,11 @@
 
 package com.noadsch12.mixin;
 
-import com.noadsch12.mixin.interfaces.ICamera;
 import com.noadsch12.modules.ModuleManager;
-import com.noadsch12.modules.impl.player.FreecamModule;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
-import com.noadsch12.cheats.AutoArmor;
-import com.noadsch12.cheats.AutoRefill;
-import com.noadsch12.cheats.AutoTool;
-import com.noadsch12.cheats.AutoTotem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
+import com.noadsch12.handlers.AutoArmor;
+import com.noadsch12.handlers.AutoRefill;
+import com.noadsch12.handlers.AutoTool;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.Camera;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.registry.tag.TagKey;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -38,97 +29,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerEntity.class)
-public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntityMixin {
+public abstract class ClientPlayerEntityMixin {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
-        if (ModuleManager.getInstance().getModule("Auto Totem").isEnabled()) AutoTotem.tick();
         if (ModuleManager.getInstance().getModule("Auto Armor").isEnabled()) AutoArmor.tick();
         if (ModuleManager.getInstance().getModule("Auto Refill").isEnabled()) AutoRefill.tick();
         if (ModuleManager.getInstance().getModule("Auto Tool").isEnabled()) AutoTool.tick();
-    }
-
-    @Override
-    public void onIsSpectator(CallbackInfoReturnable<Boolean> cir) {
-        if (ModuleManager.getInstance().getModule("Freecam").isEnabled()) {
-            cir.setReturnValue(true);
-        }
     }
 
     @Inject(method = "isCamera", at = @At("HEAD"), cancellable = true)
     private void onIsCamera(CallbackInfoReturnable<Boolean> cir) {
         if (ModuleManager.getInstance().getModule("Freecam").isEnabled()) {
             cir.setReturnValue(true);
-        }
-    }
-
-    @Override
-    public void onSetHealth(float health, CallbackInfo ci) {
-        /*
-        PlayerHealthEvent event = new PlayerHealthEvent(null, health);
-        Aoba.getInstance().eventManager.Fire(event);
-
-         */
-    }
-
-    @Override
-    protected void onGetOffGroundSpeed(CallbackInfoReturnable<Float> cir) {
-        /*
-        if (Aoba.getInstance().moduleManager.fly.state.getValue()) {
-            Fly fly = Aoba.getInstance().moduleManager.fly;
-            cir.setReturnValue((float) fly.getSpeed());
-        } else if (Aoba.getInstance().moduleManager.noclip.state.getValue()) {
-            Noclip noclip = Aoba.getInstance().moduleManager.noclip;
-            cir.setReturnValue(noclip.getSpeed());
-        }
-
-         */
-    }
-
-    @Override
-    public void onGetStepHeight(CallbackInfoReturnable<Float> cir) {
-        /*
-        Step stepHack = Aoba.getInstance().moduleManager.step;
-        if (stepHack.state.getValue()) {
-            cir.setReturnValue(cir.getReturnValue());
-        }
-
-         */
-    }
-
-    @Override
-    public void onGetJumpVelocityMultiplier(CallbackInfoReturnable<Float> cir) {
-        /*
-        AobaClient aoba = Aoba.getInstance();
-        HighJump higherJump = aoba.moduleManager.higherjump;
-        if (higherJump.state.getValue()) {
-            cir.setReturnValue(higherJump.getJumpHeightMultiplier());
-        }
-
-         */
-    }
-
-    @Override
-    public void onTickNewAi(CallbackInfo ci) {
-        if (ModuleManager.getInstance().getModule("Freecam").isEnabled())
-            ci.cancel();
-    }
-
-    @Override
-    public void onChangeLookDirection(double cursorDeltaX, double cursorDeltaY, CallbackInfo ci) {
-        FreecamModule freecam = ModuleManager.getInstance().getModule(FreecamModule.class);
-
-        if (freecam.isEnabled()) {
-            // Adjust sensitivity (0.15 is standard)
-            float sensitivity = 0.15f;
-            float newYaw = freecam.getYaw() + (float) cursorDeltaX * sensitivity;
-            float newPitch = freecam.getPitch() + (float) cursorDeltaY * sensitivity;
-
-            // Clamp pitch to prevent flipping upside down
-            newPitch = Math.max(-90.0f, Math.min(90.0f, newPitch));
-
-            freecam.setRotation(newYaw, newPitch);
-            ci.cancel(); // Stop the real player from turning
         }
     }
 

@@ -22,8 +22,6 @@ import com.noadsch12.render.ui.keystrokes.KeystrokesConfig;
 import com.noadsch12.ui.GLWindow;
 import net.minecraft.item.Items;
 
-import java.util.List;
-
 public class ShowKeystrokesModule extends Module {
     public ShowKeystrokesModule() {
         super("Show Keystrokes", "Show Keystrokes", Category.MISC,

@@ -1,0 +1,13 @@
+{
+  "vertex": "minecraft:core/rendertype_lines",
+  "fragment": "minecraft:core/rendertype_lines",
+  "samplers": [],
+  "attributes": [
+    "Position",
+    "Color",
+    "Normal"
+  ],
+  "uniforms": [
+    { "name": "ColorModulator", "type": "float4", "count": 1, "values": [ 1.0, 1.0, 1.0, 1.0 ] }
+  ]
+}

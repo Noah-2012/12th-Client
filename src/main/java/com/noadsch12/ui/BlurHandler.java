@@ -29,7 +29,6 @@ import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -309,12 +308,14 @@ public class BlurHandler {
                 return null;
             }
 
-            public Component childById(String id) { return null; }
-            @Override public List<Component> children() { return Collections.emptyList(); }
-
             @Override
             public ParentComponent removeChild(Component component) {
                 return null;
+            }
+
+            @Override
+            public List<Component> children() {
+                throw new UnsupportedOperationException("Unimplemented method 'children'");
             }
         });
 

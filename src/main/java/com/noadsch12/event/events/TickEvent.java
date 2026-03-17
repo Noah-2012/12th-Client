@@ -36,8 +36,9 @@ public class TickEvent {
         @Override
         public void Fire(ArrayList<? extends AbstractListener> listeners) {
             for (AbstractListener listener : List.copyOf(listeners)) {
-                TickListener tickListener = (TickListener) listener;
-                tickListener.onTick(this);
+                if (listener instanceof TickListener tickListener) {
+                    tickListener.onTick(this);
+                }
             }
         }
 
@@ -50,9 +51,10 @@ public class TickEvent {
     public static class Post extends AbstractEvent {
         @Override
         public void Fire(ArrayList<? extends AbstractListener> listeners) {
-            for (AbstractListener listener : listeners) {
-                TickListener tickListener = (TickListener) listener;
-                tickListener.onTick(this);
+            for (AbstractListener listener : List.copyOf(listeners)) {
+                if (listener instanceof TickListener tickListener) {
+                    tickListener.onTick(this);
+                }
             }
         }
 

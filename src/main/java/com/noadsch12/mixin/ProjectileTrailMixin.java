@@ -19,8 +19,7 @@ package com.noadsch12.mixin;
 
 import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.modules.impl.render.TrailSettings;
-import com.noadsch12.render.TrailRenderer;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
+import com.noadsch12.render.fx.TrailRenderer;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;

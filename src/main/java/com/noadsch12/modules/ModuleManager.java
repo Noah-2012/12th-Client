@@ -89,6 +89,7 @@ public class ModuleManager {
         register(new ItemRotationModule());
         register(new ProjectileDingModule());
         register(new ProjectileTrailModule());
+        register(new MotionBlurModule());
 
         // COMBAT
         register(new AimbotModule());
@@ -104,6 +105,7 @@ public class ModuleManager {
         register(new AntiWebModule());
         register(new NoSlowModule());
         register(new AntiAFKModule());
+        register(new BaritoneModule());
     }
 
     /**

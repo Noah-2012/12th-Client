@@ -35,7 +35,6 @@
 
 package com.noadsch12.mixin;
 
-import com.noadsch12.modules.ModuleManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

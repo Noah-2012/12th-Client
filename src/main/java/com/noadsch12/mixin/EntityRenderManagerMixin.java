@@ -20,7 +20,6 @@ package com.noadsch12.mixin;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.render.entity.EntityESP;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.ObjectAllocator;
 import org.joml.Matrix4f;

@@ -17,9 +17,13 @@
 
 package com.noadsch12.mixin;
 
-import com.noadsch12.cheats.ChestStealer;
+import com.noadsch12.handlers.ChestStealer;
+
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.text.Text;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,7 +32,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HandledScreen.class)
-public abstract class HandledScreenMixin {
+public abstract class HandledScreenMixin extends Screen { 
+
+    protected HandledScreenMixin(Text title) {
+        super(title);
+    }
 
     @Final
     @Shadow

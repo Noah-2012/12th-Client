@@ -18,7 +18,6 @@
 package com.noadsch12.mixin;
 
 import com.noadsch12.modules.ModuleManager;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.entity.ItemEntity;
 import com.noadsch12.render.items.ItemLabelManager;
 import org.spongepowered.asm.mixin.Mixin;

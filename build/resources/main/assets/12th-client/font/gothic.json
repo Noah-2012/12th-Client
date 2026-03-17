@@ -1,0 +1,11 @@
+{
+  "providers": [
+    {
+      "type": "ttf",
+      "file": "12th-client:gothic.ttf",
+      "shift": [0,0],
+      "size": 8,
+      "oversample": 10
+    }
+  ]
+}

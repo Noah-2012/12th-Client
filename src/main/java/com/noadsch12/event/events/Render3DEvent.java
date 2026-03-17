@@ -71,7 +71,6 @@ public class Render3DEvent extends AbstractEvent {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Class<Render3DListener> GetListenerClassType() {
 		return Render3DListener.class;

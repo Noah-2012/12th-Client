@@ -20,7 +20,7 @@ import com.noadsch12.event.events.TickEvent;
 import com.noadsch12.event.listeners.TickListener;
 import com.noadsch12.modules.Category;
 import com.noadsch12.modules.Module;
-import com.noadsch12.render.*;
+import com.noadsch12.util.world.FakePlayerEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.Vec3d;

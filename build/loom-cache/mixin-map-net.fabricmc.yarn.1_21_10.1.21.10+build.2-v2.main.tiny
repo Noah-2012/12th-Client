@@ -14,7 +14,14 @@ FIELD	com/noadsch12/mixin/HeldItemRendererMixin	Lnet/minecraft/item/ItemStack;	o
 FIELD	com/noadsch12/mixin/MinecraftClientCrashMixin	Ljava/util/function/Supplier;	crashReportSupplier	field_1747
 FIELD	com/noadsch12/mixin/MinecraftClientMixin	Lnet/minecraft/client/gui/screen/Screen;	currentScreen	field_1755
 FIELD	com/noadsch12/mixin/MinecraftClientMixin	Lnet/minecraft/client/Mouse;	mouse	field_1729
+FIELD	com/noadsch12/mixin/MinecraftClientMixin	Lnet/minecraft/client/gl/Framebuffer;	framebuffer	field_1689
+FIELD	com/noadsch12/mixin/MixinGameOptions	Lnet/minecraft/client/option/SimpleOption;	menuBackgroundBlurriness	field_49476
+FIELD	com/noadsch12/mixin/MixinGameOptions	Lnet/minecraft/client/option/SimpleOption;	chatLineSpacing	field_23932
 FIELD	com/noadsch12/mixin/PlayerEntityMixin	Lnet/minecraft/entity/player/PlayerInventory;	inventory	field_7514
+FIELD	com/noadsch12/mixin/PostEffectPassMixin	Ljava/util/Map;	uniformBuffers	field_60123
+FIELD	com/noadsch12/mixin/ScreenMixin	Lnet/minecraft/text/Text;	title	field_22785
+FIELD	com/noadsch12/mixin/ScreenMixin	I	width	field_22789
+FIELD	com/noadsch12/mixin/ScreenMixin	I	height	field_22790
 FIELD	com/noadsch12/mixin/SplashOverlayMixin	Lnet/minecraft/client/MinecraftClient;	client	field_18217
 FIELD	com/noadsch12/mixin/SplashOverlayMixin	Lnet/minecraft/resource/ResourceReload;	reload	field_17767
 FIELD	com/noadsch12/mixin/TriggerBotMixin	Lnet/minecraft/util/hit/HitResult;	crosshairTarget	field_1765

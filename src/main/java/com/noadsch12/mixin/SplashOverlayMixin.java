@@ -21,7 +21,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.resource.ResourceReload;
-import com.noadsch12.render.SmallAsciiRenderer;
+import com.noadsch12.render.util.SmallAsciiRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

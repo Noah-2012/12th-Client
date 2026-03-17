@@ -17,7 +17,7 @@
 
 package com.noadsch12.mixin;
 
-import com.noadsch12.cheats.GhostHand;
+import com.noadsch12.handlers.GhostHand;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;

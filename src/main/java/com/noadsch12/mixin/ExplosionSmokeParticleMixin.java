@@ -18,7 +18,6 @@
 package com.noadsch12.mixin;
 
 import com.noadsch12.modules.ModuleManager;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.particle.ExplosionSmokeParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;

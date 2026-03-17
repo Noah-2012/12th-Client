@@ -17,7 +17,7 @@
 
 package com.noadsch12.mixin;
 
-import com.noadsch12.MACRO;
+import com.noadsch12.macro.MACRO;
 import net.minecraft.util.crash.CrashReport;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

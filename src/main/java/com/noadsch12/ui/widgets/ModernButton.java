@@ -27,7 +27,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.Text;
 
-import static com.noadsch12.BasicGlobals.ARIAL_FONT;
+import static com.noadsch12.util.BasicGlobals.ARIAL_FONT;
 
 @NotUpdated
 public class ModernButton extends ButtonWidget {

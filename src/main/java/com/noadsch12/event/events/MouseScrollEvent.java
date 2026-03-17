@@ -21,6 +21,7 @@ import com.noadsch12.event.listeners.AbstractListener;
 import com.noadsch12.event.listeners.MouseScrollListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MouseScrollEvent extends AbstractEvent {
 	private final double horizontal;
@@ -53,9 +54,10 @@ public class MouseScrollEvent extends AbstractEvent {
 
 	@Override
 	public void Fire(ArrayList<? extends AbstractListener> listeners) {
-		for (AbstractListener listener : listeners) {
-			MouseScrollListener mouseScrollListener = (MouseScrollListener) listener;
-			mouseScrollListener.onMouseScroll(this);
+		for (AbstractListener listener : List.copyOf(listeners)) {
+			if (listener instanceof MouseScrollListener mouseListener) {
+				mouseListener.onMouseScroll(this);
+			}
 		}
 	}
 

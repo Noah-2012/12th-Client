@@ -17,7 +17,8 @@
 
 package com.noadsch12.ui.screens;
 
-import com.noadsch12.BasicGlobals;
+import com.noadsch12.ui.GLWindow;
+import com.noadsch12.util.BasicGlobals;
 import com.noadsch12.modules.Category;
 import com.noadsch12.modules.Module;
 import com.noadsch12.modules.ModuleManager;
@@ -25,7 +26,6 @@ import com.noadsch12.modules.impl.misc.ShowKeystrokesModule;
 import com.noadsch12.modules.impl.render.ProjectileTrailModule;
 import com.noadsch12.modules.impl.render.TrailSettings;
 import com.noadsch12.ui.BlurHandler;
-import com.noadsch12.ui.GLWindow;
 import com.noadsch12.ui.widgets.ModernButton;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -87,12 +87,16 @@ public class ClientSettingsScreen extends Screen {
     private final Style font = Style.EMPTY.withFont(new StyleSpriteSource.Font(BasicGlobals.ARIAL_FONT));
     private final List<Dot> dots = new ArrayList<>();
     private final ModuleManager moduleManager = ModuleManager.getInstance();
+    private final List<GLWindow> openWindows = new ArrayList<>();
 
     // UI Constants
     private static final int BUTTON_WIDTH = 150;
     private static final int BUTTON_HEIGHT = 20;
     private static final int TRAIL_BUTTON_HEIGHT = 10;
     private static final int BUTTON_SPACING = 24;
+
+    private static final int X_OFFSET = 0;
+    private static final int Y_OFFSET = -30;
 
     public ClientSettingsScreen(Screen parent) {
         super(Text.literal(""));
@@ -110,8 +114,8 @@ public class ClientSettingsScreen extends Screen {
 
         super.init();
 
-        int centerX = this.width / 2;
-        int centerY = (this.height / 2) - 50;
+        int centerX = (this.width / 2) + X_OFFSET;
+        int centerY = ((this.height / 2) - 50) + Y_OFFSET;
 
         // Create buttons for each category
         for (Category category : Category.values()) {
@@ -276,7 +280,7 @@ public class ClientSettingsScreen extends Screen {
         // Developer crash test button
         this.addDrawableChild(new ModernButton(
                 centerX - 50,
-                centerY + 297,
+                centerY + 297 - Y_OFFSET,
                 100,
                 20,
                 Text.literal("§cCrash Client"),
@@ -290,7 +294,7 @@ public class ClientSettingsScreen extends Screen {
         if (this.client.world == null) {
             this.addDrawableChild(new ModernButton(
                     centerX - 50,
-                    centerY + 273,
+                    centerY + 273 - Y_OFFSET,
                     100,
                     20,
                     Text.literal("Back"),
@@ -358,7 +362,7 @@ public class ClientSettingsScreen extends Screen {
      */
     private void renderTitleAndCategoryHeaders(DrawContext context) {
         int centerX = this.width / 2;
-        int centerY = (this.height / 2) - 62;
+        int centerY = ((this.height / 2) - 62) + Y_OFFSET;
 
         // Main title
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, centerX, 15, 0xFFFFFFFF);

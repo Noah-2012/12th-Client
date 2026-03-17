@@ -26,13 +26,12 @@ import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.Text;
 import java.util.function.Consumer;
 
-import static com.noadsch12.BasicGlobals.ARIAL_FONT;
+import static com.noadsch12.util.BasicGlobals.ARIAL_FONT;
 
 @NotUpdated
 public class ModernSlider extends SliderWidget {
     private static final Style MODERN_STYLE = Style.EMPTY.withFont(new StyleSpriteSource.Font(ARIAL_FONT));
-
-    private static final int TEXT_PADDING = 8;
+    
     private float hoverProgress = 0.0f;
 
     private Text customTooltipText;

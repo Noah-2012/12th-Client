@@ -17,8 +17,10 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.event.EventBus;
 import com.noadsch12.util.Stealth;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;

@@ -20,7 +20,6 @@ package com.noadsch12.render.ui;
 import com.noadsch12.look.ObjModel;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Util;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -28,16 +27,10 @@ import org.joml.Vector4f;
 public class ObjWireframeHud {
 
     private static final int THIN_WHITE = 0x99FFFFFF;
-    // Geschwindigkeit der Rotation (höherer Wert = schneller)
-    private static final float ROTATION_SPEED = 0.002f;
 
     public static void render(DrawContext context, ObjModel model, int x, int y, float scale) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null || client.options.hudHidden) return;
-
-        // Nutze Millisekunden für absolut flüssige Bewegung unabhängig von Ticks
-        long currentTime = Util.getMeasuringTimeMs();
-        float rotationAngle = currentTime * ROTATION_SPEED;
 
         // 3D-Transformation vorbereiten
         Matrix4f modelMatrix = new Matrix4f()

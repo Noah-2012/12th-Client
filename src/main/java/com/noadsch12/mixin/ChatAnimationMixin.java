@@ -19,7 +19,6 @@ package com.noadsch12.mixin;
 
 import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.modules.impl.misc.BetterChatModule;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;

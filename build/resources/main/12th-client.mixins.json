@@ -29,6 +29,7 @@
     "ChatAnimationMixin",
     "ChatScreenAnimationMixin",
     "ClientPlayerEntityMixin",
+    "ClientPlayNetworkHandlerMixin",
     "CriticalsMixin",
     "DamageTiltMixin",
     "DebugHudMixin",
@@ -46,12 +47,14 @@
     "MinecraftClientAccessor",
     "MinecraftClientCrashMixin",
     "MinecraftClientMixin",
+    "MixinGameOptions",
     "MouseMixin",
     "NoPushMixin",
     "NoSlowMixin",
     "PlayerEntityRendererMixin",
     "PlayerNametagMixin",
     "ProjectileDing",
+    "RenderPipelineMixin",
     "ScoreboardMixin",
     "ScreenMixin",
     "SplashOverlayMixin",
@@ -61,7 +64,6 @@
     "VelocityPacketMixin",
     "WindowMixin",
     "WorldRendererAccessor",
-    "WorldRendererMixin",
-    "interfaces.ICamera"
+    "WorldRendererMixin"
   ]
 }

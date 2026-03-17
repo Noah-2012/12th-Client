@@ -16,7 +16,7 @@
  */
 
 package com.noadsch12.modules.impl.player;
-import com.noadsch12.cheats.ChestStealer;
+import com.noadsch12.handlers.ChestStealer;
 import com.noadsch12.modules.Category;
 import com.noadsch12.modules.Module;
 import net.minecraft.item.Items;

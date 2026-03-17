@@ -1,0 +1,12 @@
+{
+  "vertex": "minecraft:core/position_color",
+  "fragment": "minecraft:core/position_color",
+  "samplers": [],
+  "attributes": [
+    "Position",
+    "Color"
+  ],
+  "uniforms": [
+    { "name": "ColorModulator", "type": "float4", "count": 1, "values": [1.0, 1.0, 1.0, 1.0] }
+  ]
+}

@@ -51,8 +51,9 @@ public class PlayerHealthEvent extends AbstractEvent {
 	@Override
 	public void Fire(ArrayList<? extends AbstractListener> listeners) {
 		for (AbstractListener listener : listeners) {
-			PlayerHealthListener playerHealthListener = (PlayerHealthListener) listener;
-			playerHealthListener.onHealthChanged(this);
+			if (listener instanceof PlayerHealthListener) {
+				((PlayerHealthListener) listener).onHealthChanged(this);
+			}
 		}
 	}
 

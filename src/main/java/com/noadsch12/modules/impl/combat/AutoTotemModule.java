@@ -16,40 +16,85 @@
  */
 
 package com.noadsch12.modules.impl.combat;
+import com.noadsch12.event.EventBus;
+import com.noadsch12.event.events.PlayerHealthEvent;
+import com.noadsch12.event.listeners.PlayerHealthListener;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import com.noadsch12.modules.Category;
 import com.noadsch12.modules.Module;
-import com.noadsch12.ui.GLWindow;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.Hand;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 
-public class AutoTotemModule extends Module {
-    public static boolean delayEnabled = true;
-    public static double delay = 100;
-
+public class AutoTotemModule extends Module implements PlayerHealthListener {
     public AutoTotemModule() {
         super("Auto Totem", "Auto Totem", Category.COMBAT,
             "Automatically places the totem in the slot", Items.TOTEM_OF_UNDYING);
     }
 
     @Override
-    public GLWindow createSettingsWindow() {
-        GLWindow window = new GLWindow("Auto Armor Settings", 50, 50);
+    public void onEnable() {
+        EventBus.register(this);
+    }
 
-        window.setDimensions(200, 90);
+    @Override
+    public void onDisable() {
+        EventBus.unregister(this);
+    }
 
-        int y = 4;
+    @Override
+    public void onHealthChanged(PlayerHealthEvent readPacketEvent) {
+        MinecraftClient mc = MinecraftClient.getInstance();
 
-        window.addCheckbox("Enable Delay", 4, y, delayEnabled, state -> {
-            delayEnabled = state;
-        });
+        if (mc.player == null || mc.world == null) return; // <-- add this
+        if (mc.currentScreen instanceof HandledScreen) return;
 
-        y += 14;
+        PlayerInventory inventory = mc.player.getInventory();
+        ItemStack handItemStack = inventory.getSelectedStack();
 
-        window.addSlider("Delay (ms)", 4, y, 150, 0, 300, delay, value -> {
-            delay = value;
-        });
+        // If offhand already has a totem, skip
+        if (mc.player.getOffHandStack().getItem() == Items.TOTEM_OF_UNDYING) return;
 
-        window.setVisible(false);
+        if (handItemStack.getItem() == Items.TOTEM_OF_UNDYING) return;
 
-        return window;
+        if (readPacketEvent.getHealth() <= 5) {
+            SwitchToTotem();
+        }
+    }
+
+    private void SwitchToTotem() {
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        PlayerInventory inventory = mc.player.getInventory();
+
+        int slot = -1;
+        for (int i = 0; i <= 36; i++) {
+            ItemStack itemStackToCheck = inventory.getStack(i);
+            Item itemToCheck = itemStackToCheck.getItem();
+
+            if (itemToCheck == Items.TOTEM_OF_UNDYING) {
+                slot = i;
+                break;
+            }
+        }
+
+        if (slot != -1) {
+            /*
+            mc.interactionManager.clickSlot(
+                    mc.player.playerScreenHandler.syncId,
+                    slot,
+                    0,
+                    SlotActionType.PICKUP,
+                    mc.player
+            );
+
+             */
+            mc.player.setStackInHand(Hand.OFF_HAND, inventory.getStack(slot));
+        }
     }
 }

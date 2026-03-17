@@ -18,7 +18,6 @@
 package com.noadsch12.mixin;
 
 import com.noadsch12.modules.ModuleManager;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;

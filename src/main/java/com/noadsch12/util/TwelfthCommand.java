@@ -21,6 +21,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.noadsch12.look.ItemHexManager;
 import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.render.entity.EntityCulling;
+import com.noadsch12.util.net.GithubReleaseFetcher;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;

@@ -17,7 +17,7 @@
 	"environment": "*",
 	"entrypoints": {
         "preLaunch": [
-            "com.noadsch12.CrashCatcherPreLaunch"
+          "com.noadsch12.macro.CrashCatcherPreLaunch"
         ],
 		"main": [
 			"com.noadsch12.TwelfthMain"

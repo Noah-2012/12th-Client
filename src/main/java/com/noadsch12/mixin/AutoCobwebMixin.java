@@ -18,7 +18,6 @@
 package com.noadsch12.mixin;
 
 import com.noadsch12.modules.ModuleManager;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;

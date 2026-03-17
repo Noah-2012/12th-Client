@@ -22,21 +22,24 @@ import com.noadsch12.look.ObjModel;
 import com.noadsch12.modules.ModuleConfigLoader;
 import com.noadsch12.networking.ClientStatusPayload;
 import com.noadsch12.networking.ClientUserManager;
-import com.noadsch12.render.RenderESP;
+import com.noadsch12.render.fx.ExplosiveScanner;
+import com.noadsch12.render.esp.RenderESP;
 import com.noadsch12.render.entity.EntityCulling;
 import com.noadsch12.render.ui.CompassHud;
 import com.noadsch12.render.ui.ObjWireframeHud;
-import com.noadsch12.ui.GLWindow;
 import com.noadsch12.ui.screens.ClientSettingsScreen;
-import com.noadsch12.util.AntiAFK;
+import com.noadsch12.util.DeferredExecutor;
+import com.noadsch12.util.world.HotbarHelper;
 import com.noadsch12.util.Stealth;
 import com.noadsch12.util.TwelfthCommand;
+import com.noadsch12.macro.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -47,270 +50,257 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class TwelfthClient implements ClientModInitializer {
+
+    // -------------------------------------------------------------------------
+    // Constants & Static Fields
+    // -------------------------------------------------------------------------
+
     public static final Logger LOGGER = LoggerFactory.getLogger("12thClient");
-    private float tickCounter = 1.0f;
-    private static final int UPDATE_INTERVAL = 100; // Alle 5 Sekunden (100 Ticks)
-    private static KeyBinding guiKeyBinding;
+    public static final String MOD_ID  = "12th-client";
+    public static final String NAME    = "12th Client";
+
+    private static final int DISCORD_UPDATE_INTERVAL = 100; // Every 5 seconds (100 ticks)
+
+    // -------------------------------------------------------------------------
+    // State
+    // -------------------------------------------------------------------------
+
     public static boolean isMenuAlreadyOpen = false;
-    private static MinecraftClient client = MinecraftClient.getInstance();
     public static ObjModel myLoadedModel;
 
+    private float discordTickCounter = 0;
+    private static KeyBinding guiKeyBinding;
+
+    // =========================================================================
+    // ClientModInitializer Entry Point
+    // =========================================================================
 
     @Override
     public void onInitializeClient() {
-        try {
-            LOGGER.info("12th Client - Client initialized!");
+            LOGGER.info("{} - Client initialized!", NAME);
 
-            Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-                MACRO.handleCrash(throwable);
-            });
-
-            /*
-            ClientSettingsScreen.registerVars();
-
-            if (TwelfthConfig.check("projectile_ding_enabled")) {
-                ClientSettingsScreen.ProjectileDingEnabled = (boolean) TwelfthConfig.getValue("projectile_ding_enabled", "bool");
-            } else TwelfthConfig.create("projectile_ding_enabled", "true");
-
-            if (TwelfthConfig.check("jump_to_food_enabled")) {
-                ClientSettingsScreen.jumpToFoodEnabled = (boolean) TwelfthConfig.getValue("jump_to_food_enabled", "bool");
-            } else TwelfthConfig.create("jump_to_food_enabled", "true");
-
-            if (TwelfthConfig.check("entity_culling_enabled")) {
-                ClientSettingsScreen.EntityCullingEnabled = (boolean) TwelfthConfig.getValue("entity_culling_enabled", "bool");
-            } else TwelfthConfig.create("entity_culling_enabled", "true");
-
-            if (TwelfthConfig.check("auto_totem_enabled")) {
-                ClientSettingsScreen.AutoTotemEnabled = (boolean) TwelfthConfig.getValue("auto_totem_enabled", "bool");
-            } else TwelfthConfig.create("auto_totem_enabled", "true");
-
-            if (TwelfthConfig.check("auto_armor_enabled")) {
-                ClientSettingsScreen.AutoArmorEnabled = (boolean) TwelfthConfig.getValue("auto_armor_enabled", "bool");
-            } else TwelfthConfig.create("auto_armor_enabled", "true");
-
-            if (TwelfthConfig.check("auto_refill_enabled")) {
-                ClientSettingsScreen.AutoRefillEnabled = (boolean) TwelfthConfig.getValue("auto_refill_enabled", "bool");
-            } else TwelfthConfig.create("auto_refill_enabled", "true");
-
-            if (TwelfthConfig.check("auto_tool_enabled")) {
-                ClientSettingsScreen.AutoToolEnabled = (boolean) TwelfthConfig.getValue("auto_tool_enabled", "bool");
-            } else TwelfthConfig.create("auto_tool_enabled", "true");
-
-            if (TwelfthConfig.check("better_chat_enabled")) {
-                ClientSettingsScreen.BetterChatEnabled = (boolean) TwelfthConfig.getValue("better_chat_enabled", "bool");
-            } else TwelfthConfig.create("better_chat_enabled", "true");
-
-            if (TwelfthConfig.check("item_display_enabled")) {
-                ClientSettingsScreen.BetterChatEnabled = (boolean) TwelfthConfig.getValue("item_display_enabled", "bool");
-            } else TwelfthConfig.create("item_display_enabled", "true");
-
-            if (TwelfthConfig.check("better_scoreboard_enabled")) {
-                ClientSettingsScreen.BetterChatEnabled = (boolean) TwelfthConfig.getValue("better_scoreboard_enabled", "bool");
-            } else TwelfthConfig.create("better_scoreboard_enabled", "true");
-
-            if (TwelfthConfig.check("hide_totem_enabled")) {
-                ClientSettingsScreen.HideTotemAnimEnabled = (boolean) TwelfthConfig.getValue("hide_totem_enabled", "bool");
-            } else TwelfthConfig.create("hide_totem_enabled", "true");
-
-            if (TwelfthConfig.check("hide_explosion_enabled")) {
-                ClientSettingsScreen.HideExplosionParticlesEnabled = (boolean) TwelfthConfig.getValue("hide_explosion_enabled", "bool");
-            } else TwelfthConfig.create("hide_explosion_enabled", "true");
-
-            if (TwelfthConfig.check("show_keystrokes_enabled")) {
-                ClientSettingsScreen.ShowKeystrokeSettingsEnabled = (boolean) TwelfthConfig.getValue("show_keystrokes_enabled", "bool");
-            } else TwelfthConfig.create("show_keystrokes_enabled", "true");
-
-            if (TwelfthConfig.check("no_tilt_enabled")) {
-                ClientSettingsScreen.NoDamageTiltEnabled = (boolean) TwelfthConfig.getValue("no_tilt_enabled", "bool");
-            } else TwelfthConfig.create("no_tilt_enabled", "true");
-
-            if (TwelfthConfig.check("aimbot_enabled")) {
-                ClientSettingsScreen.AimbotEnabled = (boolean) TwelfthConfig.getValue("aimbot_enabled", "bool");
-            } else TwelfthConfig.create("aimbot_enabled", "true");
-
-            if (TwelfthConfig.check("entity_esp_enabled")) {
-                ClientSettingsScreen.EntityEspEnabled = (boolean) TwelfthConfig.getValue("entity_esp_enabled", "bool");
-            } else TwelfthConfig.create("entity_esp_enabled", "true");
-
-            if (TwelfthConfig.check("storage_esp_enabled")) {
-                ClientSettingsScreen.ChestESPEnabled = (boolean) TwelfthConfig.getValue("storage_esp_enabled", "bool");
-            } else TwelfthConfig.create("storage_esp_enabled", "true");
-
-            if (TwelfthConfig.check("compass_hud_enabled")) {
-                ClientSettingsScreen.CompassHudEnabled = (boolean) TwelfthConfig.getValue("compass_hud_enabled", "bool");
-            } else TwelfthConfig.create("compass_hud_enabled", "true");
-
-            if (TwelfthConfig.check("player_esp_enabled")) {
-                ClientSettingsScreen.PlayerESPEnabled = (boolean) TwelfthConfig.getValue("player_esp_enabled", "bool");
-            } else TwelfthConfig.create("player_esp_enabled", "true");
-
-            if (TwelfthConfig.check("anti_web_enabled")) {
-                ClientSettingsScreen.AntiWebEnabled = (boolean) TwelfthConfig.getValue("anti_web_enabled", "bool");
-            } else TwelfthConfig.create("anti_web_enabled", "true");
-
-            if (TwelfthConfig.check("anti_afk_enabled")) {
-                ClientSettingsScreen.AntiAFKEnabled = (boolean) TwelfthConfig.getValue("anti_afk_enabled", "bool");
-            } else TwelfthConfig.create("anti_afk_enabled", "true");
-
-            if (TwelfthConfig.check("no_slow_enabled")) {
-                ClientSettingsScreen.NoSlowEnabled = (boolean) TwelfthConfig.getValue("no_slow_enabled", "bool");
-            } else TwelfthConfig.create("no_slow_enabled", "true");
-
-            if (TwelfthConfig.check("anti_knockback_enabled")) {
-                ClientSettingsScreen.AntiKnockbackEnabled = (boolean) TwelfthConfig.getValue("anti_knockback_enabled", "bool");
-            } else TwelfthConfig.create("anti_knockback_enabled", "true");
-
-            if (TwelfthConfig.check("criticals_enabled")) {
-                ClientSettingsScreen.CriticalsEnabled = (boolean) TwelfthConfig.getValue("criticals_enabled", "bool");
-            } else TwelfthConfig.create("criticals_enabled", "true");
-
-            if (TwelfthConfig.check("stealth_enabled")) {
-                ClientSettingsScreen.StealthModeEnabled = (boolean) TwelfthConfig.getValue("stealth_enabled", "bool");
-            } else TwelfthConfig.create("stealth_enabled", "true");
-
-            if (TwelfthConfig.check("fullbright_enabled")) {
-                ClientSettingsScreen.FullbrightEnabled = (boolean) TwelfthConfig.getValue("fullbright_enabled", "bool");
-            } else TwelfthConfig.create("fullbright_enabled", "true");
-
-            if (TwelfthConfig.check("auto_clicker_enabled")) {
-                ClientSettingsScreen.AutoClickerEnabled = (boolean) TwelfthConfig.getValue("auto_clicker_enabled", "bool");
-            } else TwelfthConfig.create("auto_clicker_enabled", "true");
-
-            if (TwelfthConfig.check("trigger_bot_enabled")) {
-                ClientSettingsScreen.TriggerBotEnabled = (boolean) TwelfthConfig.getValue("trigger_bot_enabled", "bool");
-            } else TwelfthConfig.create("trigger_bot_enabled", "true");
-
-            if (TwelfthConfig.check("auto_cobweb_enabled")) {
-                ClientSettingsScreen.AutoCobWebEnabled = (boolean) TwelfthConfig.getValue("auto_cobweb_enabled", "bool");
-            } else TwelfthConfig.create("auto_cobweb_enabled", "true");
-
-            if (TwelfthConfig.check("trail_index")) {
-                ClientSettingsScreen.trailIndex = (int) TwelfthConfig.getValue("trail_index", "int");
-            } else TwelfthConfig.create("trail_index", "0");
-
-            if (TwelfthConfig.check("trail_color_index")) {
-                ClientSettingsScreen.trailColorIndex = (int) TwelfthConfig.getValue("trail_color_index", "int");
-            } else TwelfthConfig.create("trail_color_index", "0");
-
-             */
+            setupCrashHandler();
+            setupHotReload();
 
             ModuleConfigLoader.loadConfig();
 
-            HotbarHelper.register();
-            TwelfthCommand.register();
-            EntityCulling.register();
+            registerCoreFeatures();
+            registerNetworking();
+            registerKeybindings();
+            registerTickHandlers();
+            registerHudRendering();
+            registerLifecycleEvents();
 
-            ClientPlayNetworking.registerGlobalReceiver(ClientStatusPayload.ID, (payload, context) -> {
-                context.client().execute(() -> ClientUserManager.USERS.add(payload.playerUuid()));
-            });
+    }
 
-            KeyBinding.Category clientCategory = KeyBinding.Category.create(Identifier.of("category.noadsch12.client"));
+    // =========================================================================
+    // Initialisation Steps
+    // =========================================================================
 
-            guiKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.client.settings_gui", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, clientCategory));
+    /** Sets a global uncaught exception handler that forwards crashes to MACRO. */
+    private void setupCrashHandler() {
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
+                MACRO.handleCrash(throwable));
+    }
 
-            ClientTickEvents.END_CLIENT_TICK.register(client -> {
-                while (guiKeyBinding.wasPressed()) if (client.currentScreen == null) {
+    /**
+     * Hot-reload system: saves the current launch command so an external script
+     * can restart Minecraft. A watcher thread polls for a signal file and
+     * triggers a clean shutdown when found.
+
+     * !! DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU ARE DOING !!
+     */
+    private void setupHotReload() {
+        // Save launch command for the hot-reload launcher script
+        ProcessHandle.current().info().commandLine().ifPresent(cmd -> {
+            try (PrintWriter writer = new PrintWriter(Path.of("reload_cmd.txt").toFile())) {
+                writer.println(cmd);
+                LOGGER.info("Saved launch command: {}", cmd);
+            } catch (Exception e) {
+                LOGGER.error("Failed to save launch command", e);
+            }
+        });
+
+        createReloadWatcherThread().start();
+    }
+
+    /**
+     * Creates the daemon thread that watches for a reload signal file
+     * and triggers a clean Minecraft shutdown when found.
+     */
+    private Thread createReloadWatcherThread() {
+        Thread reloadWatcher = new Thread(() -> {
+            Path signal = Path.of("reload_signal.txt");
+
+            while (true) {
+                try {
+                    if (Files.exists(signal)) {
+                        LOGGER.info("Reload signal received — exiting Minecraft...");
+                        Files.delete(signal);
+                        MinecraftClient.getInstance().execute(MinecraftClient.getInstance()::scheduleStop);
+                        return;
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Error in ReloadWatcher thread", e);
+                }
+            }
+        }, "ReloadWatcher");
+
+        reloadWatcher.setDaemon(true);
+        return reloadWatcher;
+    }
+
+    /** Registers helpers and commands that don't fit a narrower category. */
+    private void registerCoreFeatures() {
+        HotbarHelper.register();
+        TwelfthCommand.register();
+        EntityCulling.register();
+        RenderESP.init();
+        ExplosiveScanner.init();
+
+        CompassHud.addWaypoint("Test", 0.0, 60.0, 0.0);
+    }
+
+    /** Registers all custom network packet receivers. */
+    private void registerNetworking() {
+        ClientPlayNetworking.registerGlobalReceiver(
+                ClientStatusPayload.ID,
+                (payload, context) ->
+                        context.client().execute(() ->
+                                ClientUserManager.USERS.add(payload.playerUuid()))
+        );
+    }
+
+    /** Registers all client-side keybindings. */
+    private void registerKeybindings() {
+        KeyBinding.Category clientCategory =
+                KeyBinding.Category.create(Identifier.of("category.noadsch12.client"));
+
+        // Right-Shift → open settings GUI (toggle)
+        guiKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.client.settings_gui",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_RIGHT_SHIFT,
+                clientCategory
+        ));
+
+        // Grave Accent (`) → hold to keep settings GUI open; release to close
+        ClientTickEvents.END_CLIENT_TICK.register(this::tickGraveAccentMenu);
+
+        // Right-Shift pressed event
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (guiKeyBinding.wasPressed()) {
+                if (client.currentScreen == null) {
                     client.setScreen(new ClientSettingsScreen(null));
                 }
-            });
+            }
+        });
+    }
 
-            ClientTickEvents.END_CLIENT_TICK.register(client -> {
-                if (client.getWindow() == null || client.player == null) return;
+    /** Registers all END_CLIENT_TICK listeners. */
+    private void registerTickHandlers() {
+        ClientTickEvents.END_CLIENT_TICK.register(client -> DeferredExecutor.tick());
+        ClientTickEvents.END_CLIENT_TICK.register(Stealth::onTick);
+        ClientTickEvents.END_CLIENT_TICK.register(this::tickDiscord);
+    }
 
-                boolean isKeyDown = InputUtil.isKeyPressed(client.getWindow(), GLFW.GLFW_KEY_GRAVE_ACCENT);
-
-                if (isKeyDown) {
-                    // Only open if we haven't ALREADY sent the "open" command
-                    if (!isMenuAlreadyOpen && client.currentScreen == null) {
-                        client.setScreen(new ClientSettingsScreen(null));
-                        isMenuAlreadyOpen = true;
-                    }
-                } else {
-                    // Only close if we are currently in our "Open" state
-                    if (isMenuAlreadyOpen) {
-                        if (client.currentScreen instanceof ClientSettingsScreen) {
-                            client.setScreen(null);
-                        }
-                        isMenuAlreadyOpen = false;
-                    }
+    /** Registers the HUD elements using the v1 hud package API. */
+    private void registerHudRendering() {
+        HudElementRegistry.attachElementAfter(
+                VanillaHudElements.MISC_OVERLAYS,
+                TwelfthClient.identifier("hud"),
+                (context, tickCounter) -> {
+                    CompassHud.render(context);
+                    ensureModelLoaded();
+                    ObjWireframeHud.render(context, myLoadedModel, 39, 38, 42.6f);
                 }
+        );
+    }
 
-                // Safety: If the user presses ESC manually, reset our state variable
-                if (isMenuAlreadyOpen && client.currentScreen == null) {
-                    isMenuAlreadyOpen = false;
+    /** Registers CLIENT_STARTED and CLIENT_STOPPING lifecycle events. */
+    private void registerLifecycleEvents() {
+        DiscordRichPresenceManager.init();
+
+        ClientLifecycleEvents.CLIENT_STARTED.register(client ->
+                DiscordRichPresenceManager.updatePresence("Client started", "In Main Menu"));
+
+        ClientLifecycleEvents.CLIENT_STOPPING.register(client ->
+                DiscordRichPresenceManager.shutdown());
+    }
+
+    // =========================================================================
+    // Tick Handlers
+    // =========================================================================
+
+    /**
+     * Handles the hold-to-open behavior for the Grave Accent key:
+     * – Opens the settings screen while the key is held.
+     * – Closes the settings screen when the key is released.
+     */
+    private void tickGraveAccentMenu(MinecraftClient client) {
+        if (client.getWindow() == null || client.player == null) return;
+
+        boolean isKeyDown = InputUtil.isKeyPressed(client.getWindow(), GLFW.GLFW_KEY_GRAVE_ACCENT);
+
+        if (isKeyDown) {
+            if (!isMenuAlreadyOpen && client.currentScreen == null) {
+                client.setScreen(new ClientSettingsScreen(null));
+                isMenuAlreadyOpen = true;
+            }
+        } else {
+            if (isMenuAlreadyOpen) {
+                if (client.currentScreen instanceof ClientSettingsScreen) {
+                    client.setScreen(null);
                 }
-            });
+                isMenuAlreadyOpen = false;
+            }
+        }
 
-            AntiAFK antiAfk = new AntiAFK();
-
-            ClientTickEvents.END_CLIENT_TICK.register(client -> {
-                antiAfk.onTick();
-            });
-
-            RenderESP.init();
-
-
-
-
-            HudRenderCallback.EVENT.register((context, tickCounter) -> {
-                CompassHud.render(context);
-                RenderESP.render(context);
-
-                ensureModelLoaded();
-                ObjWireframeHud.render(context, myLoadedModel, 39, 38, 42.6f);
-            });
-
-
-
-            CompassHud.addWaypoint("Test", 0.0, 60.0, 0.0);
-
-            // Discord RPC initialisieren
-            DiscordRichPresenceManager.init();
-
-            // Tick Handler für Updates
-            ClientTickEvents.END_CLIENT_TICK.register(client -> {
-                // Discord Callbacks jedes Tick verarbeiten (wichtig!)
-                DiscordRichPresenceManager.tick();
-
-                // Presence nur alle X Ticks aktualisieren
-                tickCounter++;
-                if (tickCounter >= UPDATE_INTERVAL) {
-                    tickCounter = 0;
-                    DiscordRichPresenceManager.updateForInGame();
-                }
-            });
-
-            // Shutdown Hook für sauberes Beenden
-            ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
-                DiscordRichPresenceManager.shutdown();
-            });
-
-            // Update bei Client-Start
-            ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-                DiscordRichPresenceManager.updatePresence("Client started", "Im Mainmenu");
-            });
-
-            ClientTickEvents.END_CLIENT_TICK.register(Stealth::onTick);
-        } catch (Throwable t) {
-            MACRO.handleCrash(t);
-            Runtime.getRuntime().halt(0);
+        // Safety: user pressed ESC manually — reset flag
+        if (isMenuAlreadyOpen && client.currentScreen == null) {
+            isMenuAlreadyOpen = false;
         }
     }
 
-    public static void ensureModelLoaded() {
-        if (myLoadedModel != null) return; // Already loaded
+    /** Runs Discord callbacks every tick and updates presence every 5 seconds. */
+    private void tickDiscord(MinecraftClient client) {
+        DiscordRichPresenceManager.tick();
 
-        //Identifier modelId = Identifier.of("12th-client", "models/misc/human_body.obj");
-        Identifier modelId = Identifier.of("12th-client", "models/misc/low_poly_sphere.obj");
-        MinecraftClient.getInstance().getResourceManager().getResource(modelId).ifPresent(resource -> {
-            try (InputStream stream = resource.getInputStream()) {
-                myLoadedModel = new ObjModel(stream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        if (++discordTickCounter >= DISCORD_UPDATE_INTERVAL) {
+            discordTickCounter = 0;
+            DiscordRichPresenceManager.updateForInGame();
+        }
+    }
+
+    // =========================================================================
+    // Utility / Helpers
+    // =========================================================================
+
+    /** Lazily loads the OBJ wireframe model from the mod's resource pack. */
+    public static void ensureModelLoaded() {
+        if (myLoadedModel != null) return;
+
+        Identifier modelId = Identifier.of(MOD_ID, "models/misc/low_poly_sphere.obj");
+
+        MinecraftClient.getInstance()
+                .getResourceManager()
+                .getResource(modelId)
+                .ifPresent(resource -> {
+                    try (InputStream stream = resource.getInputStream()) {
+                        myLoadedModel = new ObjModel(stream);
+                    } catch (IOException e) {
+                        LOGGER.error("Failed to load OBJ model: {}", modelId, e);
+                    }
+                });
+    }
+
+    /** Shorthand for creating a mod-namespaced {@link Identifier}. */
+    public static Identifier identifier(String path) {
+        return Identifier.of(MOD_ID, path);
     }
 }

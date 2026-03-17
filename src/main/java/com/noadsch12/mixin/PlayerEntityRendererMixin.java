@@ -17,7 +17,7 @@
 
 package com.noadsch12.mixin;
 
-import com.noadsch12.BasicGlobals;
+import com.noadsch12.util.BasicGlobals;
 import com.noadsch12.networking.ClientUserManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;

@@ -18,7 +18,6 @@
 package com.noadsch12.render.ui;
 
 import com.noadsch12.modules.ModuleManager;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.math.MathHelper;
@@ -39,7 +38,6 @@ public class CompassHud {
         }
 
         int screenWidth = client.getWindow().getScaledWidth();
-        int screenHeight = client.getWindow().getScaledHeight();
 
         // Compass dimensions
         int compassWidth = 200;

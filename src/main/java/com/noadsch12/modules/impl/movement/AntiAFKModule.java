@@ -16,24 +16,52 @@
  */
 
 package com.noadsch12.modules.impl.movement;
+import com.noadsch12.event.events.TickEvent;
+import com.noadsch12.event.listeners.TickListener;
 import com.noadsch12.modules.Category;
 import com.noadsch12.modules.Module;
-import com.noadsch12.util.AntiAFK;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Items;
 
-public class AntiAFKModule extends Module {
+public class AntiAFKModule extends Module implements TickListener {
+    private static final MinecraftClient MC = MinecraftClient.getInstance();
+    public static boolean enabled = false;
+    private long lastJumpTime = 0;
+
     public AntiAFKModule() {
         super("Anti AFK", "Anti AFK", Category.MOVEMENT,
             "Lets the Player jump every five Seconds", Items.CLOCK);
     }
 
     @Override
-    protected void onEnable() {
-        AntiAFK.enabled = true;
+    public void onTick(TickEvent.Post event) {
+        if (!enabled || MC.player == null) return;
+
+        long currentTime = System.currentTimeMillis();
+
+        // 5 Seconds in ms
+        long JUMP_INTERVAL = 5000;
+        if (currentTime - lastJumpTime >= JUMP_INTERVAL) {
+            // Check if the player is on the ground before jumping
+            if (MC.player.isOnGround()) {
+                MC.player.jump();
+                lastJumpTime = currentTime;
+            }
+        }
     }
 
     @Override
-    protected void onDisable() {
-        AntiAFK.enabled = false;
+    public void toggle() {
+        enabled = !enabled;
+
+        if (enabled) {
+            lastJumpTime = System.currentTimeMillis();
+        }
+    }
+
+
+    @Override
+    public void onTick(TickEvent.Pre event) {
+
     }
 }

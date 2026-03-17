@@ -1,12 +1,20 @@
 plugins {
-	id 'fabric-loom' version "1.11.7"
+    id 'fabric-loom' version '1.11.7'
 	id 'maven-publish'
 }
 
 version = project.mod_version
 group = project.maven_group
 
+loom {
+    mixin {
+		defaultRefmapName = "12th-client.refmap.json"
+	}
+	accessWidenerPath = file("src/main/resources/12th-client.accesswidener")
+}
+
 repositories {
+    mavenCentral()
     maven {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
@@ -14,41 +22,35 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
-    mavenCentral()
     maven { url = "https://maven.shedaniel.me" }
-	maven {
-		url 'https://jitpack.io'
-	}
-	maven { url 'https://maven.wispforest.io/releases/' }
+    maven { url = "https://maven.wispforest.io/releases/" }
+    maven {
+        url = "https://jitpack.io"
+        content {
+            includeGroupByRegex "com\\.github\\..*"
+        }
+    }
 }
-
-loom {
-    //splitEnvironmentSourceSets()
-
-    mixin {
-		defaultRefmapName = "12th-client.refmap.json"
-	}
-	accessWidenerPath = file("src/main/resources/12th-client.accesswidener")
-}
-
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    // OWO as a normal mod dependency (not shaded)
-    modImplementation "io.wispforest:owo-lib:${project.owo_version}"
-
+    // Use a stable Iris API version from Modrinth
+    // Ensure this version matches what is actually available for 1.21.10
+    modImplementation "maven.modrinth:iris:1.9.7+1.21.10-fabric"
+    modImplementation "maven.modrinth:sodium:mc1.21.10-0.7.3-fabric"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
+    modImplementation "io.wispforest:owo-lib:${project.owo_version}"
     modImplementation "maven.modrinth:notenoughcrashes:4.4.9+1.21.1-fabric"
 
-    implementation 'com.google.code.gson:gson:2.10.1'
+    modImplementation include("maven.modrinth:midnightlib:1.8.3+1.21.9-fabric")
 
-    // You DO want discord-rpc shaded, so keep this:
+    implementation 'com.google.code.gson:gson:2.10.1'
     include implementation('com.github.Vatuu:discord-rpc:1.6.2')
 }
+
 
 jar {
     manifest {

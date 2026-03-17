@@ -18,26 +18,27 @@
 package com.noadsch12.mixin;
 
 import blue.endless.jankson.annotation.Nullable;
-import com.noadsch12.cheats.ChestStealer;
-import com.noadsch12.cheats.PlayerAimbotHandler;
+import com.noadsch12.handlers.ChestStealer;
+import com.noadsch12.handlers.PlayerAimbotHandler;
 import com.noadsch12.look.ItemHexManager;
+import com.noadsch12.mixininterfaces.IMinecraftClient;
 import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.event.EventBus;
 import com.noadsch12.event.events.TickEvent;
 import com.noadsch12.modules.impl.combat.AutoClickerModule;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.screen.Screen;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
-public abstract class MinecraftClientMixin {
+public abstract class MinecraftClientMixin implements IMinecraftClient {
 
     @Shadow
     @Nullable
@@ -51,6 +52,11 @@ public abstract class MinecraftClientMixin {
     @Shadow
     @Final
     public Mouse mouse;
+
+    @Shadow
+    @Final
+    @Mutable
+    private Framebuffer framebuffer;
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void onTick(CallbackInfo ci) {
@@ -108,5 +114,10 @@ public abstract class MinecraftClientMixin {
     @Inject(method = "tick", at = @At("TAIL"))
     private void tickPost(CallbackInfo ci) {
         EventBus.post(new TickEvent.Post());
+    }
+
+    @Override
+    public void _12th_Client$setFramebuffer(Framebuffer framebuffer) {
+        this.framebuffer = framebuffer;
     }
 }

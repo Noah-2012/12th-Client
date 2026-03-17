@@ -20,11 +20,14 @@ package com.noadsch12.mixin;
 import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.render.ui.DebugAnimation;
 import com.noadsch12.render.ui.keystrokes.KeystrokesRenderer;
-import com.noadsch12.ui.screens.ClientSettingsScreen;
+
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
+
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,6 +35,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
+@Final
+private MinecraftClient minecraftClient;
+
+
     @Inject(method = "render", at = @At("HEAD"))
     private void onUpdate(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         DebugAnimation.update();

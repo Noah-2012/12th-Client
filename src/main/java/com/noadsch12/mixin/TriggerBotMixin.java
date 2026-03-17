@@ -32,9 +32,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-// Replace with the actual package where your settings are stored
-import com.noadsch12.ui.screens.ClientSettingsScreen;
-
 @Mixin(MinecraftClient.class)
 public abstract class TriggerBotMixin {
 

@@ -17,7 +17,7 @@
 
 package com.noadsch12.ui;
 
-import com.noadsch12.BasicGlobals;
+import com.noadsch12.util.BasicGlobals;
 import com.noadsch12.event.EventBus;
 import com.noadsch12.event.events.MouseScrollEvent;
 import com.noadsch12.event.events.TickEvent;
@@ -60,8 +60,6 @@ public class GLWindow implements TickListener, MouseScrollListener {
     public static final Style FONT = Style.EMPTY.withFont(new StyleSpriteSource.Font(BasicGlobals.ARIAL_FONT));
 
     // ── Dimensions ────────────────────────────────────────────────────────────
-    private static int WINDOW_W = 200;
-    private static int WINDOW_H = 500;
     private int windowW = 200;
     private int windowH = 500;
     public static final int TITLE_H  = 13;
@@ -106,7 +104,6 @@ public class GLWindow implements TickListener, MouseScrollListener {
     private       boolean visible  = true;
     private       boolean dragging = false;
     private       int     dragOx, dragOy;
-    private       int     lastMx, lastMy;
 
     // ── Widget list ───────────────────────────────────────────────────────────
     private final List<GLWidget> widgets = new ArrayList<>();
@@ -439,9 +436,6 @@ public class GLWindow implements TickListener, MouseScrollListener {
     // ── Render ────────────────────────────────────────────────────────────────
     public void render(DrawContext ctx, int mouseX, int mouseY) {
         if (!visible) return;
-
-        lastMx = mouseX;
-        lastMy = mouseY;
 
         // NOTE: This gets handled in the mouseDragged Method
         //if (dragging) { wx = mouseX - dragOx; wy = mouseY - dragOy; }

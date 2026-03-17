@@ -17,7 +17,6 @@
 
 package com.noadsch12.mixin;
 
-import com.noadsch12.render.MotionBlurManager;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,11 +37,6 @@ public class GameRendererMixin {
             )
     )
     private void applyMotionBlur(RenderTickCounter tickCounter, CallbackInfo ci) {
-        //MotionBlurManager.render();
-    }
-
-    @Inject(method = "onResized", at = @At("TAIL"))
-    private void onResized(int width, int height, CallbackInfo ci) {
-        //MotionBlurManager.onResize();
+        // Intentionally unused – motion blur is applied at the end of WorldRenderer#render
     }
 }

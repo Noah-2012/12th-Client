@@ -19,7 +19,7 @@ package com.noadsch12.mixin;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.noadsch12.modules.ModuleManager;
-import com.noadsch12.render.TrailRenderer;
+import com.noadsch12.render.fx.TrailRenderer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.state.OutlineRenderState;
 import net.minecraft.client.util.ObjectAllocator;
@@ -29,6 +29,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,6 +44,7 @@ import static com.noadsch12.util.world.BlockUtils.getOutlineShape;
 public class WorldRendererMixin {
 
     // This shadow gives us access to the game's main vertex consumers
+    @Final
     @Shadow private BufferBuilderStorage bufferBuilders;
 
     @Inject(
