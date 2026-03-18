@@ -134,8 +134,8 @@ public class TwelfthCommand {
 
         String latestVersion = GithubReleaseFetcher.getLatestTag("Noah-2012", "12th-Client");
 
-        sendMessage("You are running Version v1.1.3.");
-        if (!latestVersion.equals("v1.1.3")) {
+        sendMessage("You are running Version v1.1.4.");
+        if (!latestVersion.equals("v1.1.4")) {
             sendMessage("§eThere is a newer Version of 12th Client.");
             sendMessage("§eType §r§d/twelfth latest check §r§e to see the newest Version.");
         }
@@ -145,7 +145,7 @@ public class TwelfthCommand {
         String latestVersion = GithubReleaseFetcher.getLatestTag("Noah-2012", "12th-Client");
 
         sendMessage("The newest Version is " + latestVersion);
-        if (!latestVersion.equals("v1.1.3")) {
+        if (!latestVersion.equals("v1.1.4")) {
             sendMessage("§eType §r§d/twelfth latest download §r§eto download the newest Version.");
         } else {
             sendMessage("§aYou are UP-TO-DATE!");

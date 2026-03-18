@@ -18,6 +18,7 @@
 package com.noadsch12.mixin;
 
 
+import com.noadsch12.modules.ModuleManager;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.item.HeldItemRenderer;
@@ -82,6 +83,10 @@ public class HeldItemRendererMixin {
             OrderedRenderCommandQueue orderedRenderCommandQueue,
             int light
     ) {
+        if (!ModuleManager.getInstance().getModule("Item Rotation").isEnabled()) {
+            return;
+        }
+
         if (player.isUsingSpyglass()) return;
 
         boolean isMainHand = hand == Hand.MAIN_HAND;

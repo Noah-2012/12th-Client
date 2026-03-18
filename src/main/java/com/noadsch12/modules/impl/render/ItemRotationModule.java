@@ -30,8 +30,8 @@ public class ItemRotationModule extends Module {
     public static float zOffset = 0.5f;
 
     public ItemRotationModule() {
-        super("Hide Totem Animation", "Hide Totem Animation", Category.RENDER,
-                "Hides the Totem popping Animation so it does\nnot distract the Player", Items.TOTEM_OF_UNDYING);
+        super("Item Rotation", "Item Rotation", Category.RENDER,
+                "Lets you set the Items position and rotation in hand", Items.TOTEM_OF_UNDYING);
     }
 
     @Override

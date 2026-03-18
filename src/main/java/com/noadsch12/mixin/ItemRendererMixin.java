@@ -17,6 +17,7 @@
 
 package com.noadsch12.mixin;
 
+import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.modules.impl.render.ItemRotationModule;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -38,6 +39,7 @@ import java.util.List;
 public class ItemRendererMixin {
     @Inject(method = "renderItem", at = @At("HEAD"))
     private static void onRenderItem(ItemDisplayContext displayContext, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, int[] tints, List<BakedQuad> quads, RenderLayer layer, ItemRenderState.Glint glint, CallbackInfo ci) {
+        if (!ModuleManager.getInstance().getModule("Item Rotation").isEnabled()) return;
         if (displayContext == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ||
                 displayContext == ItemDisplayContext.FIRST_PERSON_LEFT_HAND) {
 
