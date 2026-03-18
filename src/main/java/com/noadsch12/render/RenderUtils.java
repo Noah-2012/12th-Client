@@ -33,7 +33,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -255,9 +255,25 @@ public final class RenderUtils {
      * @return world-space origin for tracer lines
      */
     public static Vec3d getTracerOrigin(Camera camera, float offset) {
-        Vec3d camPos = camera.getPos();
-        Vector3f forward = new Vector3f(0f, 0f, -1f).rotate(camera.getRotation());
-        return camPos.add(forward.x * offset, forward.y * offset, forward.z * offset);
+        MinecraftClient mc = MinecraftClient.getInstance();
+        if (mc.player == null) return Vec3d.ZERO;
+
+        // Stable, non-bobbing eye position (Meteor uses this too)
+        float pt = mc.getRenderTickCounter().getTickProgress(true);
+        Vec3d eye = mc.player.getCameraPosVec(pt);
+
+        // Convert camera yaw/pitch into a forward vector (Meteor-style)
+        float yaw   = (float) Math.toRadians(camera.getYaw());
+        float pitch = (float) Math.toRadians(camera.getPitch());
+
+        double x = -Math.sin(yaw) * Math.cos(pitch);
+        double y = -Math.sin(pitch);
+        double z =  Math.cos(yaw) * Math.cos(pitch);
+
+        Vec3d forward = new Vec3d(x, y, z);
+
+        // Push forward so the tracer doesn't start inside the head
+        return eye.add(forward.multiply(offset));
     }
 
     /** Convenience overload with the standard 0.5-block offset. */
@@ -474,44 +490,43 @@ public final class RenderUtils {
                                         float x0, float y0, float z0,
                                         float x1, float y1, float z1,
                                         float r, float g, float b, float a,
-                                        boolean baritoneStyle) {
-        // Bottom face
+                                        boolean baritoneStyle,
+                                        Float totalHeight) {
+
         emitLine(buf, model, x0, y0, z0, x1, y0, z0, r, g, b, a);
         emitLine(buf, model, x1, y0, z0, x1, y0, z1, r, g, b, a);
         emitLine(buf, model, x1, y0, z1, x0, y0, z1, r, g, b, a);
         emitLine(buf, model, x0, y0, z1, x0, y0, z0, r, g, b, a);
-        // Top face
+            // Top face
         emitLine(buf, model, x0, y1, z0, x1, y1, z0, r, g, b, a);
         emitLine(buf, model, x1, y1, z0, x1, y1, z1, r, g, b, a);
         emitLine(buf, model, x1, y1, z1, x0, y1, z1, r, g, b, a);
         emitLine(buf, model, x0, y1, z1, x0, y1, z0, r, g, b, a);
-        // Vertical edges
+
+        // Vertikale Kanten immer zeichnen
         emitLine(buf, model, x0, y0, z0, x0, y1, z0, r, g, b, a);
         emitLine(buf, model, x1, y0, z0, x1, y1, z0, r, g, b, a);
         emitLine(buf, model, x1, y0, z1, x1, y1, z1, r, g, b, a);
         emitLine(buf, model, x0, y0, z1, x0, y1, z1, r, g, b, a);
 
-        if (baritoneStyle) {
-            // --- time-based cosine wave (same idea as Baritone) ---
+        if (baritoneStyle && totalHeight != null) {
+            // Berechne animierte Linien
             double time = (System.nanoTime() / 100000L) % 20000L;
             float wave = (float) Math.cos((time / 20000.0) * Math.PI * 2);
 
-            // scale the movement (tweak this!)
-            float amplitude = (y1 - y0) * 0.5f;
-
-            float mid = (y0 + y1) * 0.5f;
+            float amplitude = totalHeight * 0.5f;
+            float mid = totalHeight * 0.5f;
 
             float yTop = mid + wave * amplitude;
             float yBottom = mid - wave * amplitude;
 
-            // --- draw the two animated horizontal outlines ---
             // Top moving line
             emitLine(buf, model, x0, yTop, z0, x1, yTop, z0, r, g, b, a);
             emitLine(buf, model, x1, yTop, z0, x1, yTop, z1, r, g, b, a);
             emitLine(buf, model, x1, yTop, z1, x0, yTop, z1, r, g, b, a);
             emitLine(buf, model, x0, yTop, z1, x0, yTop, z0, r, g, b, a);
 
-            // Bottom moving line (mirrored)
+            // Bottom moving line
             emitLine(buf, model, x0, yBottom, z0, x1, yBottom, z0, r, g, b, a);
             emitLine(buf, model, x1, yBottom, z0, x1, yBottom, z1, r, g, b, a);
             emitLine(buf, model, x1, yBottom, z1, x0, yBottom, z1, r, g, b, a);
@@ -524,8 +539,9 @@ public final class RenderUtils {
                                         float x0, float y0, float z0,
                                         float x1, float y1, float z1,
                                         float r, float g, float b,
-                                        boolean baritoneStyle) {
-        drawWireframeBox(buf, model, x0, y0, z0, x1, y1, z1, r, g, b, 1f, baritoneStyle);
+                                        boolean baritoneStyle,
+                                        Float totalHeight) {
+        drawWireframeBox(buf, model, x0, y0, z0, x1, y1, z1, r, g, b, 1f, baritoneStyle, totalHeight);
     }
 
     /**
@@ -543,7 +559,8 @@ public final class RenderUtils {
     public static void drawWireframeBox(MatrixStack matrices, VertexConsumer buf,
                                         Vec3d camera, Box box,
                                         float r, float g, float b, float a,
-                                        boolean baritoneStyle) {
+                                        boolean baritoneStyle,
+                                        Float totalHeight) {
         matrices.push();
         matrices.translate(
                 box.minX - camera.x,
@@ -554,7 +571,7 @@ public final class RenderUtils {
         float w = (float)(box.maxX - box.minX);
         float h = (float)(box.maxY - box.minY);
         float d = (float)(box.maxZ - box.minZ);
-        drawWireframeBox(buf, model, 0f, 0f, 0f, w, h, d, r, g, b, a, baritoneStyle);
+        drawWireframeBox(buf, model, 0f, 0f, 0f, w, h, d, r, g, b, a, baritoneStyle, totalHeight);
         matrices.pop();
     }
 
@@ -585,11 +602,26 @@ public final class RenderUtils {
                                     Vec3d camera, BlockPos pos,
                                     float r, float g, float b, float a,
                                     boolean baritoneStyle) {
-        final float E = 0.005f; // tiny expand to avoid z-fighting
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        float height = 1f;
+        if (baritoneStyle) {
+            // Berechne die Höhe des Blockstapels
+            BlockPos current = pos;
+            assert mc.world != null;
+            while (mc.world.getBlockState(current.up()).isOf(mc.world.getBlockState(pos).getBlock())) {
+                height++;
+                current = current.up();
+            }
+        }
+
+        final float E = 0.005f; // Z-fighting
         matrices.push();
         translateCameraRelative(matrices, pos, camera);
         Matrix4f model = matrices.peek().getPositionMatrix();
-        drawWireframeBox(buf, model, -E, -E, -E, 1f + E, 1f + E, 1f + E, r, g, b, a, baritoneStyle);
+
+        // Zeichne **einmal** die gesamte Box
+        drawWireframeBox(buf, model, -E, -E, -E, 1f + E, height + E, 1f + E, r, g, b, a, baritoneStyle, height);
         matrices.pop();
     }
 
@@ -670,7 +702,7 @@ public final class RenderUtils {
         matrices.push();
         translateCameraRelative(matrices, pos, camera);
         Matrix4f model = matrices.peek().getPositionMatrix();
-        drawWireframeBox(buf, model, -E, -E, -E, 1f + E, 1f + E, 1f + E, r, g, b, a, baritoneStyle);
+        drawWireframeBox(buf, model, -E, -E, -E, 1f + E, 1f + E, 1f + E, r, g, b, a, baritoneStyle, null);
         matrices.pop();
     }
 
@@ -683,7 +715,7 @@ public final class RenderUtils {
                                           boolean baritoneStyle) {
         final float E = 0.002f;
         drawWireframeBox(matrices, buf, camera,
-                shape.expand(E), r, g, b, a, baritoneStyle);
+                shape.expand(E), r, g, b, a, baritoneStyle, null);
     }
 
     // =========================================================================
@@ -754,7 +786,7 @@ public final class RenderUtils {
         matrices.push();
         translateCameraRelative(matrices, pivotPos, camera);
         Matrix4f model = matrices.peek().getPositionMatrix();
-        drawWireframeBox(buf, model, minX, minY, minZ, maxX, maxY, maxZ, r, g, b, a, baritoneStyle);
+        drawWireframeBox(buf, model, minX, minY, minZ, maxX, maxY, maxZ, r, g, b, a, baritoneStyle, null);
         matrices.pop();
     }
 
@@ -788,7 +820,7 @@ public final class RenderUtils {
         Box bb = entity.getBoundingBox().offset(lx - entity.getX(),
                 ly - entity.getY(),
                 lz - entity.getZ());
-        drawWireframeBox(matrices, buf, camera, bb, r, g, b, a, baritoneStyle);
+        drawWireframeBox(matrices, buf, camera, bb, r, g, b, a, baritoneStyle, null);
     }
 
     // =========================================================================

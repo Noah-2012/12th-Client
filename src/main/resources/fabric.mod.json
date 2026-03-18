@@ -16,9 +16,6 @@
 	"accessWidener": "12th-client.accesswidener",
 	"environment": "*",
 	"entrypoints": {
-        "preLaunch": [
-          "com.noadsch12.macro.CrashCatcherPreLaunch"
-        ],
 		"main": [
 			"com.noadsch12.TwelfthMain"
 		],

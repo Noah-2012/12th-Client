@@ -17,8 +17,10 @@
 
 package com.noadsch12.render.esp;
 
+import com.noadsch12.mixininterfaces.ICameraBobbing;
 import com.noadsch12.modules.ModuleManager;
 import com.noadsch12.render.RenderUtils;
+import com.noadsch12.render.util.BobbingController;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientBlockEntityEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
@@ -39,7 +41,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class RenderESP {
+public class RenderESP implements ICameraBobbing {
 
     // --- Block cache ---
     private static final Map<BlockPos, float[]> cachedBlocks = new ConcurrentHashMap<>();
@@ -47,6 +49,10 @@ public class RenderESP {
 
     // --- Player cache ---
     private static final Map<UUID, Vec3d> cachedPlayers = new ConcurrentHashMap<>();
+
+    public static final RenderESP INSTANCE = new RenderESP();
+
+    private RenderESP() {};
 
     private static boolean initialized = false;
 
@@ -68,55 +74,76 @@ public class RenderESP {
     // Core render
     // -------------------------------------------------------------------------
     private static void render(WorldRenderContext context) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.world == null || client.player == null) return;
-        if (!ModuleManager.getInstance().getModule("Storage ESP").isEnabled()
-                && !ModuleManager.getInstance().getModule("Player ESP").isEnabled()) return;
+        BobbingController.current = INSTANCE;
+        try {
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (client.world == null || client.player == null) return;
+            if (!ModuleManager.getInstance().getModule("Storage ESP").isEnabled()
+                    && !ModuleManager.getInstance().getModule("Player ESP").isEnabled()) return;
 
-        VertexConsumerProvider consumers = context.consumers();
-        if (consumers == null) return;
+            VertexConsumerProvider consumers = context.consumers();
+            if (consumers == null) return;
 
-        MatrixStack matrices = context.matrices();
-        Camera camera        = context.gameRenderer().getCamera();
-        Vec3d cameraPos      = camera.getCameraPos();
-        Vec3d tracerOrigin   = RenderUtils.getTracerOrigin(camera);
+            MatrixStack matrices = context.matrices();
+            Camera camera = context.gameRenderer().getCamera();
+            Vec3d cameraPos = camera.getCameraPos();
 
-        RenderUtils.beginLines(2.0f, true);
+            Vec3d tracerOrigin = RenderUtils.getTracerOrigin(camera);
 
-        VertexConsumer lineBuf = consumers.getBuffer(RenderUtils.LINES_NO_DEPTH);
+            RenderUtils.beginLines(2.0f, true);
 
-        // --- Storage ESP ---
-        if (ModuleManager.getInstance().getModule("Storage ESP").isEnabled()) {
-            ChunkPos currentChunk = new ChunkPos(client.player.getBlockPos());
-            if (!currentChunk.equals(lastChunkPos)) {
-                lastChunkPos = currentChunk;
-                scanChunk(client, currentChunk);
+            VertexConsumer lineBuf = consumers.getBuffer(RenderUtils.LINES_NO_DEPTH);
+
+            // --- Storage ESP ---
+            if (ModuleManager.getInstance().getModule("Storage ESP").isEnabled()) {
+                ChunkPos currentChunk = new ChunkPos(client.player.getBlockPos());
+                if (!currentChunk.equals(lastChunkPos)) {
+                    lastChunkPos = currentChunk;
+                    scanChunk(client, currentChunk);
+                }
+
+                final double MAX_DIST_SQ = 150.0 * 150.0;
+                cachedBlocks.forEach((pos, rgb) -> {
+                    if (pos.getSquaredDistance(cameraPos) <= MAX_DIST_SQ) {
+                        float stackHeight = 1f;
+                        BlockPos current = pos;
+                        while (true) {
+                            assert MinecraftClient.getInstance().world != null;
+                            if (!MinecraftClient.getInstance().world.getBlockState(current.up())
+                                    .isOf(MinecraftClient.getInstance().world.getBlockState(pos).getBlock())) break;
+                            stackHeight++;
+                            current = current.up();
+                        }
+
+                        boolean isBase = !MinecraftClient.getInstance().world.getBlockState(pos.down())
+                                .isOf(MinecraftClient.getInstance().world.getBlockState(pos).getBlock());
+
+                        RenderUtils.drawBlockBox(matrices, lineBuf, cameraPos, pos,
+                                rgb[0], rgb[1], rgb[2], 1f, isBase);
+
+                        drawTracer(matrices, lineBuf, cameraPos,
+                                pos.toCenterPos(), tracerOrigin,
+                                rgb[0], rgb[1], rgb[2]);
+                    }
+                });
             }
 
-            final double MAX_DIST_SQ = 150.0 * 150.0;
-            cachedBlocks.forEach((pos, rgb) -> {
-                if (pos.getSquaredDistance(cameraPos) <= MAX_DIST_SQ) {
-                    RenderUtils.drawBlockBox(matrices, lineBuf, cameraPos, pos, rgb, true);
+            // --- Player ESP ---
+            if (ModuleManager.getInstance().getModule("Player ESP").isEnabled()) {
+                updatePlayerCache(client);
+                cachedPlayers.forEach((uuid, eyePos) -> {
+                    RenderUtils.drawPlayerBox(matrices, lineBuf, cameraPos, eyePos,
+                            1f, 0f, 0f, 1f, false);
                     drawTracer(matrices, lineBuf, cameraPos,
-                            pos.toCenterPos(), tracerOrigin,
-                            rgb[0], rgb[1], rgb[2]);
-                }
-            });
-        }
+                            eyePos, tracerOrigin,
+                            1f, 0f, 0f);
+                });
+            }
 
-        // --- Player ESP ---
-        if (ModuleManager.getInstance().getModule("Player ESP").isEnabled()) {
-            updatePlayerCache(client);
-            cachedPlayers.forEach((uuid, eyePos) -> {
-                RenderUtils.drawPlayerBox(matrices, lineBuf, cameraPos, eyePos,
-                        1f, 0f, 0f, 1f, false);
-                drawTracer(matrices, lineBuf, cameraPos,
-                        eyePos, tracerOrigin,
-                        1f, 0f, 0f);
-            });
+            RenderUtils.endLines();
+        } finally {
+            BobbingController.current = null;
         }
-
-        RenderUtils.endLines();
     }
 
     // -------------------------------------------------------------------------
@@ -185,5 +212,11 @@ public class RenderESP {
             if (player == client.player) continue;
             cachedPlayers.put(player.getUuid(), player.getCameraPosVec(1f));
         }
+    }
+
+    @Override
+    public boolean cancelBobbing() {
+        return ModuleManager.getInstance().getModule("Storage ESP").isEnabled()
+                || ModuleManager.getInstance().getModule("Player ESP").isEnabled();
     }
 }

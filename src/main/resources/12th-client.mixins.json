@@ -47,7 +47,6 @@
     "MinecraftClientAccessor",
     "MinecraftClientCrashMixin",
     "MinecraftClientMixin",
-    "MixinGameOptions",
     "MouseMixin",
     "NoPushMixin",
     "NoSlowMixin",
