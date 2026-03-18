@@ -3,7 +3,7 @@
 	"id": "twelfth-client",
 	"version": "${version}",
 	"name": "12th Client",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "12th Client: the twelfth Minecraft Client!",
 	"authors": [
 		"Noadsch12"
 	],
@@ -11,7 +11,7 @@
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
-	"license": "CC0-1.0",
+	"license": "LPGL-3.0",
 	"icon": "icon.png",
 	"accessWidener": "12th-client.accesswidener",
 	"environment": "*",
@@ -36,6 +36,8 @@
         "owo": "*"
     },
 	"suggests": {
-		"another-mod": "*"
+		"iris": "*",
+        "sodium": "*",
+        "owo-lib": "*"
 	}
 }
