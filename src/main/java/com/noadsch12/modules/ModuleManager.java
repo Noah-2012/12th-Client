@@ -76,6 +76,9 @@ public class ModuleManager {
         register(new BetterScoreboardModule());
         register(new ShowKeystrokesModule());
         register(new StealthModeModule());
+        register(new AutoLogoffModule());
+        register(new AutoRespawnModule());
+        register(new NoBadEffectsModule());
 
         // RENDER
         register(new HideTotemAnimModule());
@@ -106,6 +109,7 @@ public class ModuleManager {
         register(new NoSlowModule());
         register(new AntiAFKModule());
         register(new BaritoneModule());
+        register(new SafeWalkModule());
     }
 
     /**

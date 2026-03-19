@@ -18,6 +18,7 @@
 package com.noadsch12.ui.screens;
 
 import com.noadsch12.util.BasicGlobals;
+import com.noadsch12.util.ClientVersion;
 import com.noadsch12.util.net.GithubReleaseFetcher;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -30,7 +31,7 @@ public class ClientInfoScreen extends Screen {
     private final Screen parent;
 
     // Client Info
-    private static final String CLIENT_VERSION = BasicGlobals.CLIENT_VERSION; // Hier deine Version
+    private static final ClientVersion CLIENT_VERSION = BasicGlobals.CLIENT_VERSION; // Hier deine Version
     private static final String GITHUB_OWNER = "Noah-2012";
     private static final String GITHUB_REPO = "12th-Client";
     private static final String GITHUB_URL = "https://github.com/" + GITHUB_OWNER + "/" + GITHUB_REPO;
@@ -142,7 +143,7 @@ public class ClientInfoScreen extends Screen {
         int textY = boxY + 40;
         int lineHeight = 12;
 
-        drawInfoLine(context, "Current Version:", CLIENT_VERSION, centerX, textY, 0xFFFFFFFF, 0xFFFFFF00);
+        drawInfoLine(context, "Current Version:", CLIENT_VERSION.asString(CLIENT_VERSION.STRING_WITH_V, CLIENT_VERSION.STRING_POINTS), centerX, textY, 0xFFFFFFFF, 0xFFFFFF00);
         textY += lineHeight;
 
         drawInfoLine(context, "Minecraft Version:", MC_VERSION, centerX, textY, 0xFFFFFFFF, 0xFF00FF00);
@@ -235,7 +236,7 @@ public class ClientInfoScreen extends Screen {
                 if (fetchedVersion != null && !fetchedVersion.isEmpty()) {
                     latestVersion = fetchedVersion;
 
-                    String cleanCurrent = CLIENT_VERSION.replaceFirst("^v", "");
+                    String cleanCurrent = CLIENT_VERSION.asString(CLIENT_VERSION.STRING_WITHOUT_V, CLIENT_VERSION.STRING_POINTS);
                     String cleanLatest = fetchedVersion.replaceFirst("^v", "");
 
                     updateAvailable = !cleanCurrent.equals(cleanLatest);

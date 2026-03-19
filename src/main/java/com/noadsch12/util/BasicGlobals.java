@@ -23,7 +23,7 @@ import net.minecraft.util.Identifier;
 public class BasicGlobals {
     public static int SPACEBETWEENBUTTONS = 4; // in Pixels
     public static int MENUBUTTONSIZE = 200; // in Pixels
-    public static final String CLIENT_VERSION = "1.1.3";
+    public static final ClientVersion CLIENT_VERSION = new ClientVersion(1, 1, 4);
 
     public static final Identifier ARIAL_FONT = Identifier.of("12th-client", "consolas");
     public static final Identifier GOTHIC_FONT = Identifier.of("12th-client", "gothic");

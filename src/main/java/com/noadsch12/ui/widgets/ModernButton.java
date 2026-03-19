@@ -21,11 +21,13 @@ import blue.endless.jankson.annotation.Nullable;
 import com.noadsch12.annotations.NotUpdated;
 import com.noadsch12.modules.Module;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Style;
 import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import static com.noadsch12.util.BasicGlobals.ARIAL_FONT;
 
@@ -49,6 +51,8 @@ public class ModernButton extends ButtonWidget {
     private long hoverStartTime = 0L;
     private static final long FADE_DELAY_MS = 175;
     private static final float FADE_SPEED = 0.05f;
+
+    private static final Identifier WHITE_SPRITE = Identifier.of("12th-client", "white_button_150x20");
 
     public ModernButton(int x, int y, int width, int height, Text message, PressAction onPress) {
         super(x, y, width, height, message, onPress, DEFAULT_NARRATION_SUPPLIER);
@@ -80,10 +84,9 @@ public class ModernButton extends ButtonWidget {
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        // 1. Animations-Logik (Berechnung des Fortschritts)
-        // Wenn die Maus drauf ist, steigt der Wert, sonst sinkt er
+        // 1. Hover Animation Logic
         if (this.isSelected()) {
-            hoverProgress = Math.min(1.0f, hoverProgress + (delta * 0.1f)); // Geschwindigkeit anpassen
+            hoverProgress = Math.min(1.0f, hoverProgress + (delta * 0.1f));
         } else {
             hoverProgress = Math.max(0.0f, hoverProgress - (delta * 0.1f));
         }
@@ -93,26 +96,54 @@ public class ModernButton extends ButtonWidget {
         int w = width;
         int h = height;
 
-        // 2. Farben definieren
-        int backgroundColor = this.isSelected() ? 0x30FFFFFF : 0x15000000;
-        int borderColor = this.isSelected() ? 0xFFFFFFFF : 0x80707070;
-        int textColor = this.active ? (this.isSelected() ? 0xFFFFF500 : 0xFFFFFFFF) : 0xFFA0A0A0;
+        // 1. Calculate Alpha (Opacity)
+        // Background: 40% opaque base, goes up to 60% on hover
+        int bgAlpha = (int) ((0.40f + (hoverProgress * 0.20f)) * 255);
+        // Border: 30% opaque base, goes up to 80% on hover
+        int borderAlpha = (int) ((0.30f + (hoverProgress * 0.50f)) * 255);
 
-        // 3. Hintergrund & Rahmen (wie vorher)
-        context.fill(x + 2, y, x + w - 2, y + h, backgroundColor);
-        context.fill(x + 1, y + 1, x + w - 1, y + h - 1, backgroundColor);
-        context.fill(x, y + 2, x + w, y + h - 2, backgroundColor);
-        drawEnhancedRoundedOutline(context, x, y, w, h, borderColor);
+        // 2. Use BLACK (000000) or DARK GRAY (121212) instead of FFFFFF
+        // This tints your white PNG to be dark
+        int backgroundColor = (bgAlpha << 24);
+        int borderColor = (borderAlpha << 24) | 0x707070; // Grayish border
+
+        // 3. Render
+        // Border Layer
+        context.drawGuiTexture(
+                RenderPipelines.GUI_TEXTURED,
+                WHITE_SPRITE,
+                x, y, w, h,
+                borderColor
+        );
+
+        // Inner Background Layer (indented by 1px)
+        context.drawGuiTexture(
+                RenderPipelines.GUI_TEXTURED,
+                WHITE_SPRITE,
+                x + 1, y + 1, w - 2, h - 2,
+                backgroundColor
+        );
+
+        int textColor = this.active ? (this.isSelected() ? 0xFFFFF500 : 0xFFFFFFFF) : 0xFFA0A0A0;
 
         // 4. DIE SLIDE-ANIMATION (Rechts nach Links)
         if (hoverProgress > 0) {
             int slideWidth = 40;
-            int totalDistance = w + slideWidth;
-            int currentX = x + w - (int)(hoverProgress * totalDistance);
+            // We only want the slide to move within the inner area (w - 2)
+            int innerW = w - 2;
+            int totalDistance = innerW + slideWidth;
 
+            // Calculate currentX so it starts at the right edge of the INNER area
+            int currentX = (x + 1 + innerW) - (int)(hoverProgress * totalDistance);
+
+            // Scissor MUST be 1px inside the button to respect the rounded border
             context.enableScissor(x + 1, y + 1, x + w - 1, y + h - 1);
-            int slideColor = 0x30FFFFFF;
-            context.fill(currentX, y, currentX + slideWidth, y + h, slideColor);
+
+            // Use a very subtle white with alpha
+            int slideColor = 0x25FFFFFF; // ~15% opacity white
+
+            context.fill(currentX, y + 1, currentX + slideWidth, y + h - 1, slideColor);
+
             context.disableScissor();
         }
 

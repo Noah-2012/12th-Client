@@ -1,0 +1,8 @@
+{
+  "scaling": {
+    "type": "nine_slice",
+    "width": 150,
+    "height": 20,
+    "border": 4
+  }
+}

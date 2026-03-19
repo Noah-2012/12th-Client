@@ -33,3 +33,5 @@ accessible field net/minecraft/client/world/ClientWorld blockEntities Ljava/util
 
 accessible field net/minecraft/client/gl/PostEffectProcessor passes Ljava/util/List;
 accessible field net/minecraft/client/gl/PostEffectPass pipeline Lcom/mojang/blaze3d/pipeline/RenderPipeline;
+
+accessible method net/minecraft/client/gl/ShaderProgram <init> (ILjava/lang/String;)V
